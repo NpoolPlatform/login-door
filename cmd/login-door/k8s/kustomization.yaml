@@ -1,0 +1,6 @@
+commonLabels:
+  # app: login-door
+
+resources:
+- 01-login-door.yaml
+- 02-ingress.yaml

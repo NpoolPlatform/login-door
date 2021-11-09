@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: service-sample
+  name: login-door
   namespace: kube-system
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: service-sample
+      app: login-door
   template:
     metadata:
       labels:
-        app: service-sample
+        app: login-door
     spec:
       containers:
-      - name: service-sample
-        image: entropypool/service-sample:latest
+      - name: login-door
+        image: entropypool/login-door:latest
         imagePullPolicy: Always
         env:
         - name: ENV_ENVIRONMENT_TARGET
@@ -42,7 +42,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: service-sample
+  name: login-door
   namespace: kube-system
 spec:
   ports:
