@@ -5,10 +5,13 @@ go 1.16
 require (
 	entgo.io/ent v0.9.1
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20211102122901-b687a4bf9b14
+	github.com/go-chi/chi/v5 v5.0.5
 	github.com/go-resty/resty/v2 v2.7.0
+	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.6.0
 	github.com/streadway/amqp v1.0.0
 	github.com/stretchr/testify v1.7.0
+	github.com/thanhpk/randstr v1.0.4
 	github.com/urfave/cli/v2 v2.3.0
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
 	golang.org/x/sys v0.0.0-20211015200801-69063c4bb744 // indirect

@@ -1,23 +1,20 @@
 package main
 
 import (
+	"net/http"
 	"time"
 
-	"github.com/NpoolPlatform/login-door/api"
 	db "github.com/NpoolPlatform/login-door/pkg/db"
 	msgcli "github.com/NpoolPlatform/login-door/pkg/message/client"
 	msglistener "github.com/NpoolPlatform/login-door/pkg/message/listener"
 	msg "github.com/NpoolPlatform/login-door/pkg/message/message"
 	msgsrv "github.com/NpoolPlatform/login-door/pkg/message/server"
+	"github.com/go-chi/chi/v5"
 
-	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
-
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/NpoolPlatform/login-door/api"
 
 	cli "github.com/urfave/cli/v2"
-
-	"google.golang.org/grpc"
 )
 
 var runCmd = &cli.Command{
@@ -29,11 +26,12 @@ var runCmd = &cli.Command{
 			return err
 		}
 
-		go func() {
-			if err := grpc2.RunGRPC(rpcRegister); err != nil {
-				logger.Sugar().Errorf("fail to run grpc server: %v", err)
-			}
-		}()
+		r := chi.NewMux()
+		api.Register(r)
+		err := http.ListenAndServe(":32759", r)
+		if err != nil {
+			return err
+		}
 
 		if err := msgsrv.Init(); err != nil {
 			return err
@@ -45,17 +43,8 @@ var runCmd = &cli.Command{
 		go msglistener.Listen()
 		go msgSender()
 
-		return grpc2.RunGRPCGateWay(rpcGatewayRegister)
+		return nil
 	},
-}
-
-func rpcRegister(server grpc.ServiceRegistrar) error {
-	api.Register(server)
-	return nil
-}
-
-func rpcGatewayRegister(mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) error {
-	return api.RegisterGateway(mux, endpoint, opts)
 }
 
 func msgSender() {

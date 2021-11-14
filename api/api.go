@@ -1,23 +1,19 @@
 package api
 
 import (
-	"context"
-
-	"github.com/NpoolPlatform/login-door/message/npool"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"google.golang.org/grpc"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 // https://github.com/grpc/grpc-go/issues/3794
 // require_unimplemented_servers=false
 type Server struct {
-	npool.UnimplementedLoginDoorServer
+	*chi.Mux
 }
 
-func Register(server grpc.ServiceRegistrar) {
-	npool.RegisterLoginDoorServer(server, &Server{})
-}
+func Register(router *chi.Mux) {
+	router.Use(middleware.Logger)
+	router.Use(middleware.Heartbeat("/"))
 
-func RegisterGateway(mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) error {
-	return npool.RegisterLoginDoorHandlerFromEndpoint(context.Background(), mux, endpoint, opts)
+	router.Post("/version", Version) // nolint: typecheck
 }

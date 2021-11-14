@@ -1,0 +1,9 @@
+{
+	"appId": "89089012783789789719823798127398",
+	"cluster": "development",
+	"namespaceName": "login-door-npool-top",
+	"releaseKey": "20211110010620-cd82bfac74eae543",
+	"configurations": {
+		"database_name": "user_management"
+	}
+}

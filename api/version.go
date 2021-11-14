@@ -3,21 +3,18 @@
 package api
 
 import (
-	"context"
+	"net/http"
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
-	"github.com/NpoolPlatform/login-door/message/npool"
+	"github.com/NpoolPlatform/login-door/pkg/response"
 	"github.com/NpoolPlatform/login-door/pkg/version"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-func (s *Server) Version(ctx context.Context, in *emptypb.Empty) (*npool.VersionResponse, error) {
+func Version(w http.ResponseWriter, r *http.Request) {
 	resp, err := version.Version()
 	if err != nil {
 		logger.Sugar().Errorw("[Version] get service version error: %w", err)
-		return &npool.VersionResponse{}, status.Error(codes.Internal, "internal server error")
+		response.RespondWithError(w, http.StatusBadRequest, err.Error())
 	}
-	return resp, nil
+	response.RespondwithJSON(w, http.StatusOK, resp)
 }

@@ -8,8 +8,10 @@ import (
 	"log"
 
 	"github.com/NpoolPlatform/login-door/pkg/db/ent/migrate"
+	"github.com/google/uuid"
 
-	"github.com/NpoolPlatform/login-door/pkg/db/ent/empty"
+	"github.com/NpoolPlatform/login-door/pkg/db/ent/provider"
+	"github.com/NpoolPlatform/login-door/pkg/db/ent/user"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
@@ -20,8 +22,10 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
-	// Empty is the client for interacting with the Empty builders.
-	Empty *EmptyClient
+	// Provider is the client for interacting with the Provider builders.
+	Provider *ProviderClient
+	// User is the client for interacting with the User builders.
+	User *UserClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -35,7 +39,8 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
-	c.Empty = NewEmptyClient(c.config)
+	c.Provider = NewProviderClient(c.config)
+	c.User = NewUserClient(c.config)
 }
 
 // Open opens a database/sql.DB specified by the driver name and
@@ -67,9 +72,10 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:    ctx,
-		config: cfg,
-		Empty:  NewEmptyClient(cfg),
+		ctx:      ctx,
+		config:   cfg,
+		Provider: NewProviderClient(cfg),
+		User:     NewUserClient(cfg),
 	}, nil
 }
 
@@ -87,15 +93,16 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		config: cfg,
-		Empty:  NewEmptyClient(cfg),
+		config:   cfg,
+		Provider: NewProviderClient(cfg),
+		User:     NewUserClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Empty.
+//		Provider.
 //		Query().
 //		Count(ctx)
 //
@@ -118,87 +125,88 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.Empty.Use(hooks...)
+	c.Provider.Use(hooks...)
+	c.User.Use(hooks...)
 }
 
-// EmptyClient is a client for the Empty schema.
-type EmptyClient struct {
+// ProviderClient is a client for the Provider schema.
+type ProviderClient struct {
 	config
 }
 
-// NewEmptyClient returns a client for the Empty from the given config.
-func NewEmptyClient(c config) *EmptyClient {
-	return &EmptyClient{config: c}
+// NewProviderClient returns a client for the Provider from the given config.
+func NewProviderClient(c config) *ProviderClient {
+	return &ProviderClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `empty.Hooks(f(g(h())))`.
-func (c *EmptyClient) Use(hooks ...Hook) {
-	c.hooks.Empty = append(c.hooks.Empty, hooks...)
+// A call to `Use(f, g, h)` equals to `provider.Hooks(f(g(h())))`.
+func (c *ProviderClient) Use(hooks ...Hook) {
+	c.hooks.Provider = append(c.hooks.Provider, hooks...)
 }
 
-// Create returns a create builder for Empty.
-func (c *EmptyClient) Create() *EmptyCreate {
-	mutation := newEmptyMutation(c.config, OpCreate)
-	return &EmptyCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a create builder for Provider.
+func (c *ProviderClient) Create() *ProviderCreate {
+	mutation := newProviderMutation(c.config, OpCreate)
+	return &ProviderCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of Empty entities.
-func (c *EmptyClient) CreateBulk(builders ...*EmptyCreate) *EmptyCreateBulk {
-	return &EmptyCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of Provider entities.
+func (c *ProviderClient) CreateBulk(builders ...*ProviderCreate) *ProviderCreateBulk {
+	return &ProviderCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for Empty.
-func (c *EmptyClient) Update() *EmptyUpdate {
-	mutation := newEmptyMutation(c.config, OpUpdate)
-	return &EmptyUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for Provider.
+func (c *ProviderClient) Update() *ProviderUpdate {
+	mutation := newProviderMutation(c.config, OpUpdate)
+	return &ProviderUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *EmptyClient) UpdateOne(e *Empty) *EmptyUpdateOne {
-	mutation := newEmptyMutation(c.config, OpUpdateOne, withEmpty(e))
-	return &EmptyUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *ProviderClient) UpdateOne(pr *Provider) *ProviderUpdateOne {
+	mutation := newProviderMutation(c.config, OpUpdateOne, withProvider(pr))
+	return &ProviderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *EmptyClient) UpdateOneID(id int) *EmptyUpdateOne {
-	mutation := newEmptyMutation(c.config, OpUpdateOne, withEmptyID(id))
-	return &EmptyUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *ProviderClient) UpdateOneID(id uuid.UUID) *ProviderUpdateOne {
+	mutation := newProviderMutation(c.config, OpUpdateOne, withProviderID(id))
+	return &ProviderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for Empty.
-func (c *EmptyClient) Delete() *EmptyDelete {
-	mutation := newEmptyMutation(c.config, OpDelete)
-	return &EmptyDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for Provider.
+func (c *ProviderClient) Delete() *ProviderDelete {
+	mutation := newProviderMutation(c.config, OpDelete)
+	return &ProviderDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a delete builder for the given entity.
-func (c *EmptyClient) DeleteOne(e *Empty) *EmptyDeleteOne {
-	return c.DeleteOneID(e.ID)
+func (c *ProviderClient) DeleteOne(pr *Provider) *ProviderDeleteOne {
+	return c.DeleteOneID(pr.ID)
 }
 
 // DeleteOneID returns a delete builder for the given id.
-func (c *EmptyClient) DeleteOneID(id int) *EmptyDeleteOne {
-	builder := c.Delete().Where(empty.ID(id))
+func (c *ProviderClient) DeleteOneID(id uuid.UUID) *ProviderDeleteOne {
+	builder := c.Delete().Where(provider.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &EmptyDeleteOne{builder}
+	return &ProviderDeleteOne{builder}
 }
 
-// Query returns a query builder for Empty.
-func (c *EmptyClient) Query() *EmptyQuery {
-	return &EmptyQuery{
+// Query returns a query builder for Provider.
+func (c *ProviderClient) Query() *ProviderQuery {
+	return &ProviderQuery{
 		config: c.config,
 	}
 }
 
-// Get returns a Empty entity by its id.
-func (c *EmptyClient) Get(ctx context.Context, id int) (*Empty, error) {
-	return c.Query().Where(empty.ID(id)).Only(ctx)
+// Get returns a Provider entity by its id.
+func (c *ProviderClient) Get(ctx context.Context, id uuid.UUID) (*Provider, error) {
+	return c.Query().Where(provider.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *EmptyClient) GetX(ctx context.Context, id int) *Empty {
+func (c *ProviderClient) GetX(ctx context.Context, id uuid.UUID) *Provider {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -207,6 +215,96 @@ func (c *EmptyClient) GetX(ctx context.Context, id int) *Empty {
 }
 
 // Hooks returns the client hooks.
-func (c *EmptyClient) Hooks() []Hook {
-	return c.hooks.Empty
+func (c *ProviderClient) Hooks() []Hook {
+	return c.hooks.Provider
+}
+
+// UserClient is a client for the User schema.
+type UserClient struct {
+	config
+}
+
+// NewUserClient returns a client for the User from the given config.
+func NewUserClient(c config) *UserClient {
+	return &UserClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `user.Hooks(f(g(h())))`.
+func (c *UserClient) Use(hooks ...Hook) {
+	c.hooks.User = append(c.hooks.User, hooks...)
+}
+
+// Create returns a create builder for User.
+func (c *UserClient) Create() *UserCreate {
+	mutation := newUserMutation(c.config, OpCreate)
+	return &UserCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of User entities.
+func (c *UserClient) CreateBulk(builders ...*UserCreate) *UserCreateBulk {
+	return &UserCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for User.
+func (c *UserClient) Update() *UserUpdate {
+	mutation := newUserMutation(c.config, OpUpdate)
+	return &UserUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *UserClient) UpdateOne(u *User) *UserUpdateOne {
+	mutation := newUserMutation(c.config, OpUpdateOne, withUser(u))
+	return &UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *UserClient) UpdateOneID(id uuid.UUID) *UserUpdateOne {
+	mutation := newUserMutation(c.config, OpUpdateOne, withUserID(id))
+	return &UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for User.
+func (c *UserClient) Delete() *UserDelete {
+	mutation := newUserMutation(c.config, OpDelete)
+	return &UserDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *UserClient) DeleteOne(u *User) *UserDeleteOne {
+	return c.DeleteOneID(u.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *UserClient) DeleteOneID(id uuid.UUID) *UserDeleteOne {
+	builder := c.Delete().Where(user.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &UserDeleteOne{builder}
+}
+
+// Query returns a query builder for User.
+func (c *UserClient) Query() *UserQuery {
+	return &UserQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a User entity by its id.
+func (c *UserClient) Get(ctx context.Context, id uuid.UUID) (*User, error) {
+	return c.Query().Where(user.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *UserClient) GetX(ctx context.Context, id uuid.UUID) *User {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *UserClient) Hooks() []Hook {
+	return c.hooks.User
 }

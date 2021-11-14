@@ -9,15 +9,28 @@ import (
 	"github.com/NpoolPlatform/login-door/pkg/db/ent"
 )
 
-// The EmptyFunc type is an adapter to allow the use of ordinary
-// function as Empty mutator.
-type EmptyFunc func(context.Context, *ent.EmptyMutation) (ent.Value, error)
+// The ProviderFunc type is an adapter to allow the use of ordinary
+// function as Provider mutator.
+type ProviderFunc func(context.Context, *ent.ProviderMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f EmptyFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.EmptyMutation)
+func (f ProviderFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ProviderMutation)
 	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EmptyMutation", m)
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ProviderMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The UserFunc type is an adapter to allow the use of ordinary
+// function as User mutator.
+type UserFunc func(context.Context, *ent.UserMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f UserFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.UserMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserMutation", m)
 	}
 	return f(ctx, mv)
 }

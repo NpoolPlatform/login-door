@@ -8,19 +8,60 @@ import (
 )
 
 var (
-	// EmptiesColumns holds the columns for the "empties" table.
-	EmptiesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+	// ProvidersColumns holds the columns for the "providers" table.
+	ProvidersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "provider_name", Type: field.TypeString},
+		{Name: "client_id", Type: field.TypeString, Unique: true},
+		{Name: "client_secret", Type: field.TypeString, Unique: true},
+		{Name: "provider_url", Type: field.TypeString},
+		{Name: "provider_logo", Type: field.TypeString},
+		{Name: "create_at", Type: field.TypeUint32},
+		{Name: "update_at", Type: field.TypeUint32},
+		{Name: "delete_at", Type: field.TypeUint32},
 	}
-	// EmptiesTable holds the schema information for the "empties" table.
-	EmptiesTable = &schema.Table{
-		Name:       "empties",
-		Columns:    EmptiesColumns,
-		PrimaryKey: []*schema.Column{EmptiesColumns[0]},
+	// ProvidersTable holds the schema information for the "providers" table.
+	ProvidersTable = &schema.Table{
+		Name:       "providers",
+		Columns:    ProvidersColumns,
+		PrimaryKey: []*schema.Column{ProvidersColumns[0]},
+	}
+	// UsersColumns holds the columns for the "users" table.
+	UsersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "username", Type: field.TypeString, Unique: true},
+		{Name: "password", Type: field.TypeString},
+		{Name: "salt", Type: field.TypeString},
+		{Name: "display_name", Type: field.TypeString, Default: ""},
+		{Name: "phone_number", Type: field.TypeString, Nullable: true},
+		{Name: "email_address", Type: field.TypeString, Nullable: true},
+		{Name: "login_times", Type: field.TypeInt32, Default: 0},
+		{Name: "kyc_verify", Type: field.TypeBool, Default: false},
+		{Name: "ga_verify", Type: field.TypeBool, Default: false},
+		{Name: "signup_method", Type: field.TypeString},
+		{Name: "create_at", Type: field.TypeUint32},
+		{Name: "update_at", Type: field.TypeUint32},
+		{Name: "delete_at", Type: field.TypeUint32},
+		{Name: "avatar", Type: field.TypeString, Default: ""},
+		{Name: "region", Type: field.TypeString, Default: ""},
+		{Name: "age", Type: field.TypeInt32, Default: 0},
+		{Name: "gender", Type: field.TypeString, Default: ""},
+		{Name: "birthday", Type: field.TypeString, Default: ""},
+		{Name: "country", Type: field.TypeString, Default: ""},
+		{Name: "province", Type: field.TypeString, Default: ""},
+		{Name: "city", Type: field.TypeString, Default: ""},
+		{Name: "career", Type: field.TypeString, Default: ""},
+	}
+	// UsersTable holds the schema information for the "users" table.
+	UsersTable = &schema.Table{
+		Name:       "users",
+		Columns:    UsersColumns,
+		PrimaryKey: []*schema.Column{UsersColumns[0]},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
-		EmptiesTable,
+		ProvidersTable,
+		UsersTable,
 	}
 )
 
