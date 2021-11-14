@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -17,6 +18,8 @@ import (
 	cli "github.com/urfave/cli/v2"
 )
 
+const HttpPort = 50060
+
 var runCmd = &cli.Command{
 	Name:    "run",
 	Aliases: []string{"s"},
@@ -28,7 +31,7 @@ var runCmd = &cli.Command{
 
 		r := chi.NewMux()
 		api.Register(r)
-		err := http.ListenAndServe(":32759", r)
+		err := http.ListenAndServe(fmt.Sprintf(":%v", HttpPort), r)
 		if err != nil {
 			return err
 		}
