@@ -42,7 +42,7 @@ func init() {
 	// userDescLoginTimes is the schema descriptor for login_times field.
 	userDescLoginTimes := userFields[7].Descriptor()
 	// user.DefaultLoginTimes holds the default value on creation for the login_times field.
-	user.DefaultLoginTimes = userDescLoginTimes.Default.(int32)
+	user.DefaultLoginTimes = userDescLoginTimes.Default.(uint32)
 	// userDescKycVerify is the schema descriptor for kyc_verify field.
 	userDescKycVerify := userFields[8].Descriptor()
 	// user.DefaultKycVerify holds the default value on creation for the kyc_verify field.
@@ -76,7 +76,7 @@ func init() {
 	// userDescAge is the schema descriptor for age field.
 	userDescAge := userFields[16].Descriptor()
 	// user.DefaultAge holds the default value on creation for the age field.
-	user.DefaultAge = userDescAge.Default.(int32)
+	user.DefaultAge = userDescAge.Default.(uint32)
 	// userDescGender is the schema descriptor for gender field.
 	userDescGender := userFields[17].Descriptor()
 	// user.DefaultGender holds the default value on creation for the gender field.

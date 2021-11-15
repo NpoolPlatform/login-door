@@ -25,7 +25,7 @@ func (User) Fields() []ent.Field {
 		field.String("display_name").Default(""),
 		field.String("phone_number").Optional(),
 		field.String("email_address").Optional(),
-		field.Int32("login_times").
+		field.Uint32("login_times").
 			Default(0),
 		field.Bool("kyc_verify").
 			Default(false),
@@ -49,7 +49,7 @@ func (User) Fields() []ent.Field {
 			}),
 		field.String("avatar").Default(""),
 		field.String("region").Default(""),
-		field.Int32("age").Default(0),
+		field.Uint32("age").Default(0),
 		field.String("gender").Default(""),
 		field.String("birthday").Default(""),
 		field.String("country").Default(""),

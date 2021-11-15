@@ -818,8 +818,8 @@ type UserMutation struct {
 	display_name   *string
 	phone_number   *string
 	email_address  *string
-	login_times    *int32
-	addlogin_times *int32
+	login_times    *uint32
+	addlogin_times *uint32
 	kyc_verify     *bool
 	ga_verify      *bool
 	signup_method  *string
@@ -831,8 +831,8 @@ type UserMutation struct {
 	adddelete_at   *uint32
 	avatar         *string
 	region         *string
-	age            *int32
-	addage         *int32
+	age            *uint32
+	addage         *uint32
 	gender         *string
 	birthday       *string
 	country        *string
@@ -1173,13 +1173,13 @@ func (m *UserMutation) ResetEmailAddress() {
 }
 
 // SetLoginTimes sets the "login_times" field.
-func (m *UserMutation) SetLoginTimes(i int32) {
-	m.login_times = &i
+func (m *UserMutation) SetLoginTimes(u uint32) {
+	m.login_times = &u
 	m.addlogin_times = nil
 }
 
 // LoginTimes returns the value of the "login_times" field in the mutation.
-func (m *UserMutation) LoginTimes() (r int32, exists bool) {
+func (m *UserMutation) LoginTimes() (r uint32, exists bool) {
 	v := m.login_times
 	if v == nil {
 		return
@@ -1190,7 +1190,7 @@ func (m *UserMutation) LoginTimes() (r int32, exists bool) {
 // OldLoginTimes returns the old "login_times" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldLoginTimes(ctx context.Context) (v int32, err error) {
+func (m *UserMutation) OldLoginTimes(ctx context.Context) (v uint32, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldLoginTimes is only allowed on UpdateOne operations")
 	}
@@ -1204,17 +1204,17 @@ func (m *UserMutation) OldLoginTimes(ctx context.Context) (v int32, err error) {
 	return oldValue.LoginTimes, nil
 }
 
-// AddLoginTimes adds i to the "login_times" field.
-func (m *UserMutation) AddLoginTimes(i int32) {
+// AddLoginTimes adds u to the "login_times" field.
+func (m *UserMutation) AddLoginTimes(u uint32) {
 	if m.addlogin_times != nil {
-		*m.addlogin_times += i
+		*m.addlogin_times += u
 	} else {
-		m.addlogin_times = &i
+		m.addlogin_times = &u
 	}
 }
 
 // AddedLoginTimes returns the value that was added to the "login_times" field in this mutation.
-func (m *UserMutation) AddedLoginTimes() (r int32, exists bool) {
+func (m *UserMutation) AddedLoginTimes() (r uint32, exists bool) {
 	v := m.addlogin_times
 	if v == nil {
 		return
@@ -1577,13 +1577,13 @@ func (m *UserMutation) ResetRegion() {
 }
 
 // SetAge sets the "age" field.
-func (m *UserMutation) SetAge(i int32) {
-	m.age = &i
+func (m *UserMutation) SetAge(u uint32) {
+	m.age = &u
 	m.addage = nil
 }
 
 // Age returns the value of the "age" field in the mutation.
-func (m *UserMutation) Age() (r int32, exists bool) {
+func (m *UserMutation) Age() (r uint32, exists bool) {
 	v := m.age
 	if v == nil {
 		return
@@ -1594,7 +1594,7 @@ func (m *UserMutation) Age() (r int32, exists bool) {
 // OldAge returns the old "age" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldAge(ctx context.Context) (v int32, err error) {
+func (m *UserMutation) OldAge(ctx context.Context) (v uint32, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldAge is only allowed on UpdateOne operations")
 	}
@@ -1608,17 +1608,17 @@ func (m *UserMutation) OldAge(ctx context.Context) (v int32, err error) {
 	return oldValue.Age, nil
 }
 
-// AddAge adds i to the "age" field.
-func (m *UserMutation) AddAge(i int32) {
+// AddAge adds u to the "age" field.
+func (m *UserMutation) AddAge(u uint32) {
 	if m.addage != nil {
-		*m.addage += i
+		*m.addage += u
 	} else {
-		m.addage = &i
+		m.addage = &u
 	}
 }
 
 // AddedAge returns the value that was added to the "age" field in this mutation.
-func (m *UserMutation) AddedAge() (r int32, exists bool) {
+func (m *UserMutation) AddedAge() (r uint32, exists bool) {
 	v := m.addage
 	if v == nil {
 		return
@@ -2091,7 +2091,7 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		m.SetEmailAddress(v)
 		return nil
 	case user.FieldLoginTimes:
-		v, ok := value.(int32)
+		v, ok := value.(uint32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -2154,7 +2154,7 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		m.SetRegion(v)
 		return nil
 	case user.FieldAge:
-		v, ok := value.(int32)
+		v, ok := value.(uint32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -2253,7 +2253,7 @@ func (m *UserMutation) AddedField(name string) (ent.Value, bool) {
 func (m *UserMutation) AddField(name string, value ent.Value) error {
 	switch name {
 	case user.FieldLoginTimes:
-		v, ok := value.(int32)
+		v, ok := value.(uint32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -2281,7 +2281,7 @@ func (m *UserMutation) AddField(name string, value ent.Value) error {
 		m.AddDeleteAt(v)
 		return nil
 	case user.FieldAge:
-		v, ok := value.(int32)
+		v, ok := value.(uint32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

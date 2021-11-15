@@ -99,23 +99,23 @@ func (uu *UserUpdate) ClearEmailAddress() *UserUpdate {
 }
 
 // SetLoginTimes sets the "login_times" field.
-func (uu *UserUpdate) SetLoginTimes(i int32) *UserUpdate {
+func (uu *UserUpdate) SetLoginTimes(u uint32) *UserUpdate {
 	uu.mutation.ResetLoginTimes()
-	uu.mutation.SetLoginTimes(i)
+	uu.mutation.SetLoginTimes(u)
 	return uu
 }
 
 // SetNillableLoginTimes sets the "login_times" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableLoginTimes(i *int32) *UserUpdate {
-	if i != nil {
-		uu.SetLoginTimes(*i)
+func (uu *UserUpdate) SetNillableLoginTimes(u *uint32) *UserUpdate {
+	if u != nil {
+		uu.SetLoginTimes(*u)
 	}
 	return uu
 }
 
-// AddLoginTimes adds i to the "login_times" field.
-func (uu *UserUpdate) AddLoginTimes(i int32) *UserUpdate {
-	uu.mutation.AddLoginTimes(i)
+// AddLoginTimes adds u to the "login_times" field.
+func (uu *UserUpdate) AddLoginTimes(u uint32) *UserUpdate {
+	uu.mutation.AddLoginTimes(u)
 	return uu
 }
 
@@ -237,23 +237,23 @@ func (uu *UserUpdate) SetNillableRegion(s *string) *UserUpdate {
 }
 
 // SetAge sets the "age" field.
-func (uu *UserUpdate) SetAge(i int32) *UserUpdate {
+func (uu *UserUpdate) SetAge(u uint32) *UserUpdate {
 	uu.mutation.ResetAge()
-	uu.mutation.SetAge(i)
+	uu.mutation.SetAge(u)
 	return uu
 }
 
 // SetNillableAge sets the "age" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableAge(i *int32) *UserUpdate {
-	if i != nil {
-		uu.SetAge(*i)
+func (uu *UserUpdate) SetNillableAge(u *uint32) *UserUpdate {
+	if u != nil {
+		uu.SetAge(*u)
 	}
 	return uu
 }
 
-// AddAge adds i to the "age" field.
-func (uu *UserUpdate) AddAge(i int32) *UserUpdate {
-	uu.mutation.AddAge(i)
+// AddAge adds u to the "age" field.
+func (uu *UserUpdate) AddAge(u uint32) *UserUpdate {
+	uu.mutation.AddAge(u)
 	return uu
 }
 
@@ -483,14 +483,14 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := uu.mutation.LoginTimes(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt32,
+			Type:   field.TypeUint32,
 			Value:  value,
 			Column: user.FieldLoginTimes,
 		})
 	}
 	if value, ok := uu.mutation.AddedLoginTimes(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt32,
+			Type:   field.TypeUint32,
 			Value:  value,
 			Column: user.FieldLoginTimes,
 		})
@@ -574,14 +574,14 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := uu.mutation.Age(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt32,
+			Type:   field.TypeUint32,
 			Value:  value,
 			Column: user.FieldAge,
 		})
 	}
 	if value, ok := uu.mutation.AddedAge(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt32,
+			Type:   field.TypeUint32,
 			Value:  value,
 			Column: user.FieldAge,
 		})
@@ -720,23 +720,23 @@ func (uuo *UserUpdateOne) ClearEmailAddress() *UserUpdateOne {
 }
 
 // SetLoginTimes sets the "login_times" field.
-func (uuo *UserUpdateOne) SetLoginTimes(i int32) *UserUpdateOne {
+func (uuo *UserUpdateOne) SetLoginTimes(u uint32) *UserUpdateOne {
 	uuo.mutation.ResetLoginTimes()
-	uuo.mutation.SetLoginTimes(i)
+	uuo.mutation.SetLoginTimes(u)
 	return uuo
 }
 
 // SetNillableLoginTimes sets the "login_times" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableLoginTimes(i *int32) *UserUpdateOne {
-	if i != nil {
-		uuo.SetLoginTimes(*i)
+func (uuo *UserUpdateOne) SetNillableLoginTimes(u *uint32) *UserUpdateOne {
+	if u != nil {
+		uuo.SetLoginTimes(*u)
 	}
 	return uuo
 }
 
-// AddLoginTimes adds i to the "login_times" field.
-func (uuo *UserUpdateOne) AddLoginTimes(i int32) *UserUpdateOne {
-	uuo.mutation.AddLoginTimes(i)
+// AddLoginTimes adds u to the "login_times" field.
+func (uuo *UserUpdateOne) AddLoginTimes(u uint32) *UserUpdateOne {
+	uuo.mutation.AddLoginTimes(u)
 	return uuo
 }
 
@@ -858,23 +858,23 @@ func (uuo *UserUpdateOne) SetNillableRegion(s *string) *UserUpdateOne {
 }
 
 // SetAge sets the "age" field.
-func (uuo *UserUpdateOne) SetAge(i int32) *UserUpdateOne {
+func (uuo *UserUpdateOne) SetAge(u uint32) *UserUpdateOne {
 	uuo.mutation.ResetAge()
-	uuo.mutation.SetAge(i)
+	uuo.mutation.SetAge(u)
 	return uuo
 }
 
 // SetNillableAge sets the "age" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableAge(i *int32) *UserUpdateOne {
-	if i != nil {
-		uuo.SetAge(*i)
+func (uuo *UserUpdateOne) SetNillableAge(u *uint32) *UserUpdateOne {
+	if u != nil {
+		uuo.SetAge(*u)
 	}
 	return uuo
 }
 
-// AddAge adds i to the "age" field.
-func (uuo *UserUpdateOne) AddAge(i int32) *UserUpdateOne {
-	uuo.mutation.AddAge(i)
+// AddAge adds u to the "age" field.
+func (uuo *UserUpdateOne) AddAge(u uint32) *UserUpdateOne {
+	uuo.mutation.AddAge(u)
 	return uuo
 }
 
@@ -1128,14 +1128,14 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if value, ok := uuo.mutation.LoginTimes(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt32,
+			Type:   field.TypeUint32,
 			Value:  value,
 			Column: user.FieldLoginTimes,
 		})
 	}
 	if value, ok := uuo.mutation.AddedLoginTimes(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt32,
+			Type:   field.TypeUint32,
 			Value:  value,
 			Column: user.FieldLoginTimes,
 		})
@@ -1219,14 +1219,14 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if value, ok := uuo.mutation.Age(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt32,
+			Type:   field.TypeUint32,
 			Value:  value,
 			Column: user.FieldAge,
 		})
 	}
 	if value, ok := uuo.mutation.AddedAge(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt32,
+			Type:   field.TypeUint32,
 			Value:  value,
 			Column: user.FieldAge,
 		})
