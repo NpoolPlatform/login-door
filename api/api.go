@@ -1,3 +1,12 @@
+// Package Login Door service API
+//
+// This service is to implement api about login.
+//
+//      Host: localhost
+//      Version: 0.0.1
+//
+// swagger:meta
+
 package api
 
 import (
@@ -20,4 +29,8 @@ func Register(router *chi.Mux) {
 	router.Post("/v1/update/provider", UpdateProvider)    // nolint: typecheck
 	router.Post("/v1/get/all/providers", GetAllProviders) // nolint: typecheck
 	router.Post("/v1/delete/provider", DeleteProvider)    // nolint: typecheck
+	router.Post("/v1/login", Login)                       // nolint: typecheck
+	router.Post("/v1/get/user/login", GetUserLogin)       // nolint: typecheck
+	router.Post("/v1/logout", Logout)                     // nolint: typecheck
+	router.Post("/v1/refresh/session", RefreshSession)    // nolint: typecheck
 }

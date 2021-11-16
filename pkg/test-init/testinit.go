@@ -19,15 +19,16 @@ func Init() error {
 
 	appName := path.Base(path.Dir(path.Dir(path.Dir(myPath))))
 	configPath := fmt.Sprintf("%s/../../cmd/%v", path.Dir(myPath), appName)
+	fmt.Println("appname is:", appName, "config path is", configPath)
 
 	err := app.Init(servicename.ServiceName, "", "", "", configPath, nil, nil)
 	if err != nil {
 		return xerrors.Errorf("cannot init app stub: %v", err)
 	}
-
 	err = db.Init()
 	if err != nil {
 		return xerrors.Errorf("cannot init database: %v", err)
 	}
+
 	return nil
 }

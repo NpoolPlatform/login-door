@@ -8,6 +8,7 @@ import (
 	"github.com/NpoolPlatform/login-door/pkg/db/ent"
 	"github.com/NpoolPlatform/login-door/pkg/db/ent/provider"
 	"github.com/NpoolPlatform/login-door/pkg/mytype"
+	"github.com/google/uuid"
 	"golang.org/x/xerrors"
 )
 
@@ -71,6 +72,27 @@ func Update(ctx context.Context, in *mytype.UpdateProviderRequest) (*mytype.Upda
 	return &mytype.UpdateProviderResponse{
 		Info: dbRowToProviderInfo(info),
 	}, nil
+}
+
+func Get(ctx context.Context, providerID string) (mytype.ProviderInfo, error) {
+	id, err := uuid.Parse(providerID)
+	if err != nil {
+		return mytype.ProviderInfo{}, xerrors.Errorf("invalid provider id: %v", err)
+	}
+
+	info, err := db.Client().
+		Provider.
+		Query().
+		Where(
+			provider.And(
+				provider.DeleteAt(0),
+				provider.ID(id),
+			),
+		).Only(ctx)
+	if err != nil {
+		return mytype.ProviderInfo{}, xerrors.Errorf("fail to get provider info: %v", err)
+	}
+	return dbRowToProviderInfo(info), nil
 }
 
 func GetAll(ctx context.Context, in *mytype.GetProvidersRequest) (*mytype.GetProvidersResponse, error) {
