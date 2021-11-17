@@ -43,7 +43,9 @@ pipeline {
       steps {
         sh (returnStdout: false, script: '''
           make -C tools/grpc install
+          make -C tools/swagger install
           PATH=$PATH:/usr/go/bin:$HOME/go/bin make -C message clean proto
+          PATH=$PATH:/usr/go/bin:$HOME/go/bin swagger generate spec -o ./login-door.swagger.json
           make verify-build
         '''.stripIndent())
       }
@@ -82,7 +84,7 @@ pipeline {
           kubectl exec --namespace kube-system $devboxpod -- make -C /tmp/$servicename deps before-test test after-test
           kubectl exec --namespace kube-system $devboxpod -- rm -rf /tmp/$servicename
           swaggeruipod=`kubectl get pods -A | grep swagger | awk '{print $2}'`
-          kubectl cp message/npool/*.swagger.json kube-system/$swaggeruipod:/usr/share/nginx/html || true
+          kubectl cp ./*.swagger.json kube-system/$swaggeruipod:/usr/share/nginx/html || true
         '''.stripIndent())
       }
     }
