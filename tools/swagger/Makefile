@@ -4,6 +4,12 @@ URL=curl -s https://api.github.com/repos/go-swagger/go-swagger/releases/latest |
 
 install: tool
 
+pre:
+ifndef JQ
+	$(error "jq not exist, please run 'apt install jq'")
+endif
+
 tool:
+	apt install jq -y
 	curl -o /usr/local/bin/swagger -L'#' ${URL}
 	chmod +x /usr/local/bin/swagger
