@@ -10,6 +10,5 @@ ifndef JQ
 endif
 
 tool:
-	apt install jq -y
 	curl -o /usr/local/bin/swagger -L'#' ${URL}
 	chmod +x /usr/local/bin/swagger
