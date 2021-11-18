@@ -43,9 +43,9 @@ pipeline {
       steps {
         sh (returnStdout: false, script: '''
           make -C tools/grpc install
-          make -C tools/swagger install
           PATH=$PATH:/usr/go/bin:$HOME/go/bin make -C message clean proto
-          PATH=$PATH:/usr/go/bin:$HOME/go/bin swagger generate spec -o ./login-door.swagger.json
+          make -C tools/swagger install
+          /usr/local/bin/swagger generate spec -o ./login-door.swagger.json
           make verify-build
         '''.stripIndent())
       }
