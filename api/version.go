@@ -15,6 +15,7 @@ func Version(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logger.Sugar().Errorw("[Version] get service version error: %w", err)
 		response.RespondWithError(w, http.StatusBadRequest, err.Error())
+		return
 	}
 	response.RespondwithJSON(w, http.StatusOK, resp)
 }

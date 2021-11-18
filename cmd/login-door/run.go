@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
 	"time"
 
 	db "github.com/NpoolPlatform/login-door/pkg/db"
@@ -10,11 +8,11 @@ import (
 	msglistener "github.com/NpoolPlatform/login-door/pkg/message/listener"
 	msg "github.com/NpoolPlatform/login-door/pkg/message/message"
 	msgsrv "github.com/NpoolPlatform/login-door/pkg/message/server"
-	"github.com/go-chi/chi/v5"
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	"github.com/NpoolPlatform/login-door/api"
 
+	http2 "github.com/NpoolPlatform/go-service-framework/pkg/http"
 	cli "github.com/urfave/cli/v2"
 )
 
@@ -29,13 +27,6 @@ var runCmd = &cli.Command{
 			return err
 		}
 
-		r := chi.NewMux()
-		api.Register(r)
-		err := http.ListenAndServe(fmt.Sprintf(":%v", HttpPort), r)
-		if err != nil {
-			return err
-		}
-
 		if err := msgsrv.Init(); err != nil {
 			return err
 		}
@@ -46,7 +37,7 @@ var runCmd = &cli.Command{
 		go msglistener.Listen()
 		go msgSender()
 
-		return nil
+		return http2.Run(api.Register)
 	},
 }
 

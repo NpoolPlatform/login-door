@@ -76,8 +76,10 @@ func GetUserLogin(w http.ResponseWriter, r *http.Request) {
 	resp, err := login.GetUserLogin(request)
 	if err != nil {
 		response.RespondWithError(w, http.StatusBadRequest, err.Error())
+		return
 	}
 	response.RespondwithJSON(w, http.StatusOK, resp)
+	return
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
