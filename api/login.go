@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/NpoolPlatform/go-service-framework/pkg/config"
 	"github.com/NpoolPlatform/login-door/pkg/cookie"
 	"github.com/NpoolPlatform/login-door/pkg/login"
 	"github.com/NpoolPlatform/login-door/pkg/mytype"
@@ -53,8 +54,25 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	serviceName := config.GetStringValueWithNameSpace("", config.KeyHostname)
+	cookieDomain := config.GetStringValueWithNameSpace(serviceName, cookie.CookieDomain)
+
 	myCookie := cookie.CreateLoginSessionCookie(session)
 	http.SetCookie(w, &myCookie)
+	http.SetCookie(w, &http.Cookie{
+		Name:    "npool_user_id",
+		Value:   resp,
+		Path:    "/",
+		Domain:  cookieDomain,
+		Expires: time.Now().AddDate(0, 0, 1),
+	})
+	http.SetCookie(w, &http.Cookie{
+		Name:    "npool_app_id",
+		Value:   request.AppID,
+		Path:    "/",
+		Domain:  cookieDomain,
+		Expires: time.Now().AddDate(0, 0, 1),
+	})
 	http.Redirect(w, r, "/", http.StatusFound)
 	response.RespondwithJSON(w, http.StatusOK, mytype.LoginResponse{
 		Info: "login successfully",
