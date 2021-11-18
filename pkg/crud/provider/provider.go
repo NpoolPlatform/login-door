@@ -95,7 +95,7 @@ func Get(ctx context.Context, providerID string) (mytype.ProviderInfo, error) {
 	return dbRowToProviderInfo(info), nil
 }
 
-func GetAll(ctx context.Context, in *mytype.GetProvidersRequest) (*mytype.GetProvidersResponse, error) {
+func GetAll(ctx context.Context, in *mytype.GetAllProvidersRequest) (*mytype.GetAllProvidersResponse, error) {
 	infos, err := db.Client().
 		Provider.
 		Query().
@@ -112,7 +112,7 @@ func GetAll(ctx context.Context, in *mytype.GetProvidersRequest) (*mytype.GetPro
 	for _, info := range infos {
 		response = append(response, dbRowToProviderInfo(info))
 	}
-	return &mytype.GetProvidersResponse{
+	return &mytype.GetAllProvidersResponse{
 		Infos: response,
 	}, nil
 }

@@ -14,12 +14,12 @@ import (
 	"github.com/NpoolPlatform/login-door/pkg/session"
 )
 
+// Login swagger:route POST /v1/login login
+// login into system.
+// this api implement login by username and password, email or phone verification code login and third party login.
+// Responses:
+// 			default: loginResponse
 func Login(w http.ResponseWriter, r *http.Request) {
-	// swagger:route Post /v1/login Login
-	// login into system.
-	// this api implement login by username and password, email or phone verification code login and third party login.
-	// Response:
-	// 			200: LoginResponse
 	request := mytype.LoginRequest{}
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
@@ -79,11 +79,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// GetUserLogin swagger:route POST /v1/get/user/login getUserLogin
+// this api get user login status and the user's login info stored in redis key.
+// Responses:
+//      default: getUserLoginResponse
 func GetUserLogin(w http.ResponseWriter, r *http.Request) {
-	// swagger:route Post /v1/get/user/login
-	// this api get user login status and the user's login info stored in redis key.
-	// Response:
-	//      200: GetUserLoginResponse
 	request := mytype.GetUserLoginRequest{}
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
@@ -100,11 +100,11 @@ func GetUserLogin(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+// Logout swagger:route POST /v1/logout logout
+// this api implement logout from system
+// Responses:
+//			default: logoutResponse
 func Logout(w http.ResponseWriter, r *http.Request) {
-	// swagger:route Post /v1/logout
-	// this api implement logout from system
-	// Response:
-	//			200: LogoutResponse
 	request := mytype.LogoutRequest{}
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {

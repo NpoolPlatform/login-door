@@ -69,10 +69,10 @@ func TestProviderAPI(t *testing.T) { // nolint
 
 	resp2, err := cli.R().
 		SetHeader("Content-Type", "application/json").
-		SetBody(mytype.GetProvidersRequest{}).Post("http://localhost:50060/v1/get/all/providers")
+		SetBody(mytype.GetAllProvidersRequest{}).Post("http://localhost:50060/v1/get/all/providers")
 	if assert.Nil(t, err) {
 		assert.Equal(t, 200, resp2.StatusCode())
-		response := mytype.GetProvidersResponse{}
+		response := mytype.GetAllProvidersResponse{}
 		err := json.Unmarshal(resp2.Body(), &response)
 		if assert.Nil(t, err) {
 			assert.Equal(t, response.Infos[0].ProviderID, providerInfo.ProviderID)

@@ -14,6 +14,10 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
+// @title chi-swagger example APIs
+// @version 1.0
+// @description chi-swagger example APIs
+// @BasePath /
 // https://github.com/grpc/grpc-go/issues/3794
 // require_unimplemented_servers=false
 type Server struct {

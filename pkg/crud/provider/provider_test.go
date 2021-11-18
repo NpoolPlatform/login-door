@@ -60,7 +60,7 @@ func TestProviderCRUD(t *testing.T) {
 		assert.Equal(t, resp1.Info.ProviderLogo, providerInfo.ProviderLogo)
 	}
 
-	resp2, err := GetAll(context.Background(), &mytype.GetProvidersRequest{})
+	resp2, err := GetAll(context.Background(), &mytype.GetAllProvidersRequest{})
 	if assert.Nil(t, err) {
 		assert.Equal(t, resp2.Infos[0].ProviderID, providerInfo.ProviderID)
 		assert.Equal(t, resp2.Infos[0].ClientID, providerInfo.ClientID)
