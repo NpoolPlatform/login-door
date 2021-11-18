@@ -22,6 +22,10 @@ func init() {
 }
 
 func TestLogin(t *testing.T) {
+	if runByGithubAction, err := strconv.ParseBool(os.Getenv("RUN_BY_GITHUB_ACTION")); err == nil && runByGithubAction {
+		return
+	}
+
 	appInfo, err := grpc.CreaeteApp()
 	if assert.Nil(t, err) {
 		assert.NotNil(t, appInfo)
