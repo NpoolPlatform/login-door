@@ -4,11 +4,10 @@ go 1.16
 
 require (
 	entgo.io/ent v0.9.1
-	github.com/NpoolPlatform/application-management v0.0.0-20211114130519-bcb592a33694
-	github.com/NpoolPlatform/go-service-framework v0.0.0-20211116033517-08d405150ec0
-	github.com/NpoolPlatform/permission-door v0.0.0-20211115130920-8d27e48dbdc7
-	github.com/NpoolPlatform/user-management v0.0.0-20211116034745-5b40e44035c6
-	github.com/NpoolPlatform/verification-door v0.0.0-20211115014754-0a08eaafd7b3
+	github.com/NpoolPlatform/application-management v0.0.0-20211118073342-19d4087ce5d7
+	github.com/NpoolPlatform/go-service-framework v0.0.0-20211117074545-bc1340849b08
+	github.com/NpoolPlatform/user-management v0.0.0-20211118074733-74d672dfd2bc
+	github.com/NpoolPlatform/verification-door v0.0.0-20211118074123-247296ad2d6d
 	github.com/casbin/casdoor v1.2.0
 	github.com/go-chi/chi/v5 v5.0.5
 	github.com/go-redis/redis/v8 v8.11.4
@@ -21,7 +20,7 @@ require (
 	github.com/urfave/cli/v2 v2.3.0
 	golang.org/x/oauth2 v0.0.0-20211005180243-6b3c2da341f1 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
-	google.golang.org/genproto v0.0.0-20211104193956-4c6863e31247
+	google.golang.org/genproto v0.0.0-20211117155847-120650a500bb
 	google.golang.org/grpc v1.41.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0
 	google.golang.org/protobuf v1.27.1

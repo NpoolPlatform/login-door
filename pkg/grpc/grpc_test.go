@@ -25,14 +25,16 @@ func TestGrpc(t *testing.T) {
 		return
 	}
 
-	err := VerifyCode("crazyzplzpl@163.com", "12345")
-	assert.NotNil(t, err)
+	_, err := newApplicationGrpcConn()
+	assert.Nil(t, err)
 
-	userID := uuid.New().String()
-	appID := uuid.New().String()
-	resourceID := uuid.New().String()
-	action := "post"
-	err = AuthenticateUserByUserID(userID, appID, resourceID, action)
+	_, err = newUserGrpcConn()
+	assert.Nil(t, err)
+
+	_, err = newVerificationGrpcConn()
+	assert.Nil(t, err)
+
+	err = VerifyCode("crazyzplzpl@163.com", "12345")
 	assert.NotNil(t, err)
 
 	username := "test" + uuid.New().String()

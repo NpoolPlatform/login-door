@@ -5,9 +5,16 @@ import (
 	"path"
 	"runtime"
 
+	applicationconst "github.com/NpoolPlatform/application-management/pkg/message/const"
 	"github.com/NpoolPlatform/go-service-framework/pkg/app"
+	"github.com/NpoolPlatform/go-service-framework/pkg/config"
+	mysqlconst "github.com/NpoolPlatform/go-service-framework/pkg/mysql/const"
+	rabbitmqconst "github.com/NpoolPlatform/go-service-framework/pkg/rabbitmq/const"
+	redisconst "github.com/NpoolPlatform/go-service-framework/pkg/redis/const"
 	"github.com/NpoolPlatform/login-door/pkg/db"
 	servicename "github.com/NpoolPlatform/login-door/pkg/service-name"
+	userconst "github.com/NpoolPlatform/user-management/pkg/message/const"
+	verificationconst "github.com/NpoolPlatform/verification-door/pkg/message/const"
 	"golang.org/x/xerrors"
 )
 
@@ -21,7 +28,13 @@ func Init() error {
 	configPath := fmt.Sprintf("%s/../../cmd/%v", path.Dir(myPath), appName)
 	fmt.Println("appname is:", appName, "config path is", configPath)
 
-	err := app.Init(servicename.ServiceName, "", "", "", configPath, nil, nil)
+	err := app.Init(servicename.ServiceName, "", "", "", configPath, nil, nil,
+		config.ServiceNameToNamespace(mysqlconst.MysqlServiceName),
+		config.ServiceNameToNamespace(redisconst.RedisServiceName),
+		config.ServiceNameToNamespace(rabbitmqconst.RabbitMQServiceName),
+		config.ServiceNameToNamespace(userconst.ServiceName),
+		config.ServiceNameToNamespace(verificationconst.ServiceName),
+		config.ServiceNameToNamespace(applicationconst.ServiceName))
 	if err != nil {
 		return xerrors.Errorf("cannot init app stub: %v", err)
 	}

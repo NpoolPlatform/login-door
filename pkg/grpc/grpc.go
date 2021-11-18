@@ -3,13 +3,10 @@ package grpc
 import (
 	"context"
 	"encoding/json"
-	"strings"
 
 	pbApplication "github.com/NpoolPlatform/application-management/message/npool"
 	applicationconst "github.com/NpoolPlatform/application-management/pkg/message/const"
-	"github.com/NpoolPlatform/go-service-framework/pkg/config"
 	mygrpc "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
-	pbPermission "github.com/NpoolPlatform/permission-door/message/npool"
 	pbUser "github.com/NpoolPlatform/user-management/message/npool"
 	userconst "github.com/NpoolPlatform/user-management/pkg/message/const"
 	pbVerification "github.com/NpoolPlatform/verification-door/message/npool"
@@ -22,27 +19,15 @@ import (
 
 const (
 	VerificationService     = verificationconst.ServiceName
-	VerificationServicePort = ":50091"
-	PermissionService       = "permission-door.npool.top"
-	PermissionServicePort   = ":50101"
+	VerificationServicePort = "50091"
 	UserService             = userconst.ServiceName
-	UserServicePort         = ":50071"
+	UserServicePort         = "50071"
 	ApplicationService      = applicationconst.ServiceName
-	ApplicationServicePort  = ":50081"
+	ApplicationServicePort  = "50081"
 )
 
 func newVerificationGrpcConn() (*grpc.ClientConn, error) {
-	serviceAgent, err := config.PeekService(VerificationService)
-	if err != nil {
-		return nil, err
-	}
-
-	myAddress := []string{}
-	for _, address := range strings.Split(serviceAgent.Address, ",") {
-		myAddress = append(myAddress, address+VerificationServicePort)
-	}
-
-	conn, err := mygrpc.GetGRPCConn(strings.Join(myAddress, ","))
+	conn, err := mygrpc.GetGRPCConn(verificationconst.ServiceName, mygrpc.GRPCTAG)
 	if err != nil {
 		return nil, err
 	}
@@ -56,8 +41,6 @@ func VerifyCode(param, code string) error {
 		return err
 	}
 
-	defer conn.Close()
-
 	client := pbVerification.NewVerificationDoorClient(conn)
 	_, err = client.VerifyCode(context.Background(), &pbVerification.VerifyCodeRequest{
 		Param: param,
@@ -69,18 +52,8 @@ func VerifyCode(param, code string) error {
 	return nil
 }
 
-func newPermissionGrpcConn() (*grpc.ClientConn, error) {
-	serviceAgent, err := config.PeekService(PermissionService)
-	if err != nil {
-		return nil, err
-	}
-
-	myAddress := []string{}
-	for _, address := range strings.Split(serviceAgent.Address, ",") {
-		myAddress = append(myAddress, address+PermissionServicePort)
-	}
-
-	conn, err := mygrpc.GetGRPCConn(strings.Join(myAddress, ","))
+func newUserGrpcConn() (*grpc.ClientConn, error) {
+	conn, err := mygrpc.GetGRPCConn(userconst.ServiceName, mygrpc.GRPCTAG)
 	if err != nil {
 		return nil, err
 	}
@@ -88,44 +61,23 @@ func newPermissionGrpcConn() (*grpc.ClientConn, error) {
 	return conn, nil
 }
 
-func AuthenticateUserByUserID(userID, appID, resourceID, action string) error {
-	conn, err := newPermissionGrpcConn()
+func CreateTestUser(appID string) (*pbUser.SignupResponse, error) {
+	conn, err := newUserGrpcConn()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	defer conn.Close()
+	client := pbUser.NewUserClient(conn)
 
-	client := pbPermission.NewPermissionDoorClient(conn)
-	_, err = client.AuthenticateUserPolicyByID(context.Background(), &pbPermission.AuthenticateUserPolicyByIDRequest{
-		UserID:     userID,
-		AppID:      appID,
-		ResourecID: resourceID,
-		Action:     action,
+	resp, err := client.SignUp(context.Background(), &pbUser.SignupRequest{
+		AppId:    appID,
+		Username: uuid.New().String(),
+		Password: "12345679",
 	})
 	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func newUserGrpcConn() (*grpc.ClientConn, error) {
-	serviceAgent, err := config.PeekService(UserService)
-	if err != nil {
 		return nil, err
 	}
-
-	myAddress := []string{}
-	for _, address := range strings.Split(serviceAgent.Address, ",") {
-		myAddress = append(myAddress, address+UserServicePort)
-	}
-
-	conn, err := mygrpc.GetGRPCConn(strings.Join(myAddress, ","))
-	if err != nil {
-		return nil, err
-	}
-
-	return conn, nil
+	return resp, nil
 }
 
 func CreateUser(appID, providerID string, providerUserInfo *idp.UserInfo) (*pbUser.BindThirdPartyResponse, error) {
@@ -134,7 +86,6 @@ func CreateUser(appID, providerID string, providerUserInfo *idp.UserInfo) (*pbUs
 		return nil, err
 	}
 
-	defer conn.Close()
 	client := pbUser.NewUserClient(conn)
 
 	resp, err := client.AddUser(context.Background(), &pbUser.AddUserRequest{
@@ -174,8 +125,6 @@ func QueryUserExist(username, password string) (*pbUser.QueryUserExistResponse, 
 		return nil, err
 	}
 
-	defer conn.Close()
-
 	client := pbUser.NewUserClient(conn)
 	resp, err := client.QueryUserExist(context.Background(), &pbUser.QueryUserExistRequest{
 		Username: username,
@@ -192,8 +141,6 @@ func QueryUserByUserProviderID(providerID, userProviderID string) (*pbUser.Query
 	if err != nil {
 		return nil, err
 	}
-
-	defer conn.Close()
 
 	client := pbUser.NewUserClient(conn)
 	resp, err := client.QueryUserByUserProviderID(context.Background(), &pbUser.QueryUserByUserProviderIDRequest{
@@ -212,14 +159,12 @@ func QueryUserFrozen(userID string) error {
 		return err
 	}
 
-	defer conn.Close()
-
 	client := pbUser.NewUserClient(conn)
 	resp, err := client.QueryUserFrozen(context.Background(), &pbUser.QueryUserFrozenRequest{
 		UserID: userID,
 	})
 	if err != nil {
-		return err
+		return nil
 	}
 	if resp.Info != nil {
 		return xerrors.Errorf("user has been frozen")
@@ -228,17 +173,7 @@ func QueryUserFrozen(userID string) error {
 }
 
 func newApplicationGrpcConn() (*grpc.ClientConn, error) {
-	serviceAgent, err := config.PeekService(ApplicationService)
-	if err != nil {
-		return nil, err
-	}
-
-	myAddress := []string{}
-	for _, address := range strings.Split(serviceAgent.Address, ",") {
-		myAddress = append(myAddress, address+ApplicationServicePort)
-	}
-
-	conn, err := mygrpc.GetGRPCConn(strings.Join(myAddress, ","))
+	conn, err := mygrpc.GetGRPCConn(applicationconst.ServiceName, mygrpc.GRPCTAG)
 	if err != nil {
 		return nil, err
 	}
@@ -246,12 +181,30 @@ func newApplicationGrpcConn() (*grpc.ClientConn, error) {
 	return conn, nil
 }
 
+func CreaeteApp() (*pbApplication.CreateApplicationResponse, error) {
+	conn, err := newApplicationGrpcConn()
+	if err != nil {
+		return nil, err
+	}
+
+	client := pbApplication.NewApplicationManagementClient(conn)
+	resp, err := client.CreateApplication(context.Background(), &pbApplication.CreateApplicationRequest{
+		Info: &pbApplication.ApplicationInfo{
+			ApplicationName:  uuid.New().String(),
+			ApplicationOwner: uuid.New().String(),
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func QueryUserInApplication(userID, appID string) error {
 	conn, err := newApplicationGrpcConn()
 	if err != nil {
 		return err
 	}
-	defer conn.Close()
 
 	client := pbApplication.NewApplicationManagementClient(conn)
 	_, err = client.GetUserFromApplication(context.Background(), &pbApplication.GetUserFromApplicationRequest{
