@@ -1,6 +1,5 @@
 #/bin/bash
-URL=curl -s https://api.github.com/repos/go-swagger/go-swagger/releases/latest | \
-  jq -r '.assets[] | select(.name | contains("'"$(uname | tr '[:upper:]' '[:lower:]')"'_amd64")) | .browser_download_url'
+URL=https://github.com/go-swagger/go-swagger/releases/download/v0.28.0/swagger_linux_amd64
 
 install: tool
 
@@ -10,5 +9,5 @@ ifndef JQ
 endif
 
 tool:
-	curl -o /usr/local/bin/swagger -L'#' ${URL}
+	curl -sL -o /usr/local/bin/swagger ${URL}
 	chmod +x /usr/local/bin/swagger
