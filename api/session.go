@@ -22,7 +22,7 @@ func RefreshSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = session.RefreshSession(w, request)
+	err = session.RefreshSession(r, w, request)
 	if err != nil {
 		response.RespondWithError(w, http.StatusBadRequest, err.Error())
 		return

@@ -19,7 +19,7 @@ func GenerateSession(size int) (string, error) {
 	return base64.URLEncoding.EncodeToString(b), nil
 }
 
-func RefreshSession(w http.ResponseWriter, request mytype.RefreshSessionRequest) error {
+func RefreshSession(r *http.Request, w http.ResponseWriter, request mytype.RefreshSessionRequest) error {
 	loginResp, err := myredis.QueryKeyInfo(mytype.LoginKeyword, request.LoginSession)
 	if err != nil {
 		return err
@@ -39,6 +39,6 @@ func RefreshSession(w http.ResponseWriter, request mytype.RefreshSessionRequest)
 	if err != nil {
 		return err
 	}
-	err = cookie.SetAllCookie(request.LoginSession, request.AppLoginSession, request.UserID, request.AppID, w)
+	err = cookie.SetAllCookie(r, request.LoginSession, request.AppLoginSession, request.UserID, request.AppID, w)
 	return err
 }
