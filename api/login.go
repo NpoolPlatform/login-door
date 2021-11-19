@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/NpoolPlatform/go-service-framework/pkg/config"
 	"github.com/NpoolPlatform/login-door/pkg/cookie"
 	"github.com/NpoolPlatform/login-door/pkg/login"
 	"github.com/NpoolPlatform/login-door/pkg/mytype"
@@ -33,50 +32,85 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session, err := session.GenerateSession(16)
+	loginSession, err := session.GenerateSession(16)
 	if err != nil {
 		response.RespondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	info := mytype.LoginSession{
+	appLoginSession, err := session.GenerateSession(16)
+
+	infoLogin := mytype.LoginSession{
 		LoginIP:    r.RemoteAddr,
 		LoginTime:  time.Now().Local().String(),
 		LoginAgent: r.UserAgent(),
-		Session:    session,
-		AppID:      request.AppID,
+		Session:    loginSession,
 		UserID:     resp,
 	}
 
-	err = myredis.InsertKeyInfo(mytype.LoginKeyword, session, info, mytype.SessionExpires)
+	err = myredis.InsertKeyInfo(mytype.LoginKeyword, loginSession, infoLogin, mytype.SessionExpires)
 	if err != nil {
 		response.RespondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	serviceName := config.GetStringValueWithNameSpace("", config.KeyHostname)
-	cookieDomain := config.GetStringValueWithNameSpace(serviceName, cookie.CookieDomain)
+	infoAppLogin := mytype.LoginSession{
+		LoginIP:    r.RemoteAddr,
+		LoginTime:  time.Now().Local().String(),
+		LoginAgent: r.UserAgent(),
+		Session:    appLoginSession,
+		AppID:      request.AppID,
+		UserID:     resp,
+	}
+	err = myredis.InsertKeyInfo(mytype.LoginKeyword, appLoginSession, infoAppLogin, mytype.SessionExpires)
+	if err != nil {
+		response.RespondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
 
-	myCookie := cookie.CreateLoginSessionCookie(session)
-	http.SetCookie(w, &myCookie)
-	http.SetCookie(w, &http.Cookie{
-		Name:    "npool_user_id",
-		Value:   resp,
-		Path:    "/",
-		Domain:  cookieDomain,
-		Expires: time.Now().AddDate(0, 0, 1),
-	})
-	http.SetCookie(w, &http.Cookie{
-		Name:    "npool_app_id",
-		Value:   request.AppID,
-		Path:    "/",
-		Domain:  cookieDomain,
-		Expires: time.Now().AddDate(0, 0, 1),
-	})
+	err = cookie.SetAllCookie(loginSession, appLoginSession, resp, request.AppID, w)
+	if err != nil {
+		response.RespondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
 	http.Redirect(w, r, "/", http.StatusFound)
 	response.RespondwithJSON(w, http.StatusOK, mytype.LoginResponse{
 		Info: "login successfully",
 	})
+}
+
+// GetSSOLogin swagger:route POST /v1/get/sso/login getSSOLogin
+// this api get user sso login info.
+// Responses:
+//			default: getSSOLoginResponse
+func GetSSOLogin(w http.ResponseWriter, r *http.Request) {
+	request := mytype.GetSSOLoginRequest{}
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		response.RespondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp, err := login.GetSSOLogin(request)
+	if err != nil {
+		response.RespondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	appLoginSession, err := session.GenerateSession(16)
+	if err != nil {
+		response.RespondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err = cookie.SetAllCookie(request.LoginSession, appLoginSession, request.UserID, request.AppID, w)
+	if err != nil {
+		response.RespondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	response.RespondwithJSON(w, http.StatusOK, resp)
 }
 
 // GetUserLogin swagger:route POST /v1/get/user/login getUserLogin
@@ -117,11 +151,10 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.SetCookie(w, &http.Cookie{
-		Name:    cookie.LoginSessionCookieName,
+		Name:    mytype.AppLoginSessionKey,
 		MaxAge:  -1,
 		Expires: time.Now().Add(-100 * time.Hour),
 		Path:    "/",
-		Domain:  cookie.CookieDomain,
 	})
 	http.Redirect(w, r, "/", http.StatusFound)
 	response.RespondwithJSON(w, http.StatusOK, mytype.LogoutResponse{

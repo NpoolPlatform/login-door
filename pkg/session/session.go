@@ -19,11 +19,26 @@ func GenerateSession(size int) (string, error) {
 	return base64.URLEncoding.EncodeToString(b), nil
 }
 
-func RefreshSession(info *mytype.LoginSession, request mytype.RefreshSessionRequest) (http.Cookie, error) {
-	err := myredis.InsertKeyInfo(mytype.LoginKeyword, request.Session, info, mytype.SessionExpires)
+func RefreshSession(w http.ResponseWriter, request mytype.RefreshSessionRequest) error {
+	loginResp, err := myredis.QueryKeyInfo(mytype.LoginKeyword, request.LoginSession)
 	if err != nil {
-		return http.Cookie{}, err
+		return err
 	}
-	myCookie := cookie.CreateLoginSessionCookie(request.Session)
-	return myCookie, nil
+
+	appLoginResp, err := myredis.QueryKeyInfo(mytype.LoginKeyword, request.AppLoginSession)
+	if err != nil {
+		return err
+	}
+
+	err = myredis.InsertKeyInfo(mytype.LoginKeyword, request.LoginSession, loginResp, mytype.SessionExpires)
+	if err != nil {
+		return err
+	}
+
+	err = myredis.InsertKeyInfo(mytype.LoginKeyword, request.AppLoginSession, appLoginResp, mytype.SessionExpires)
+	if err != nil {
+		return err
+	}
+	err = cookie.SetAllCookie(request.LoginSession, request.AppLoginSession, request.UserID, request.AppID, w)
+	return err
 }

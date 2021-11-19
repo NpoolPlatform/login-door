@@ -5,22 +5,49 @@ import (
 	"time"
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/config"
+	"github.com/NpoolPlatform/login-door/pkg/mytype"
 )
 
-const (
-	LoginSessionCookieName = "npool_login_session_id"
-	CookieDomain           = "cookie_domain"
-)
+const CookieDomain = "cookie_domain"
 
-func CreateLoginSessionCookie(sessionID string) http.Cookie {
+func getCookieDomain() string {
 	serviceName := config.GetStringValueWithNameSpace("", config.KeyHostname)
 	cookieDomain := config.GetStringValueWithNameSpace(serviceName, CookieDomain)
-	cookie := http.Cookie{
-		Name:    LoginSessionCookieName,
-		Value:   sessionID,
-		Domain:  cookieDomain,
-		Expires: time.Now().AddDate(0, 0, 1), // set cookie expires after one day
+	return cookieDomain
+}
+
+func SetAllCookie(loginSession, appLoginSession, userID, appID string, w http.ResponseWriter) error {
+	cookieDomain := getCookieDomain()
+	http.SetCookie(w, &http.Cookie{
+		Name:    mytype.AppLoginSessionKey,
+		Value:   appLoginSession,
 		Path:    "/",
-	}
-	return cookie
+		Expires: time.Now().AddDate(0, 0, 1),
+	})
+
+	http.SetCookie(w, &http.Cookie{
+		Name:    mytype.LoginSessionKey,
+		Value:   loginSession,
+		Path:    "/",
+		Domain:  cookieDomain,
+		Expires: time.Now().AddDate(0, 0, 1),
+	})
+
+	http.SetCookie(w, &http.Cookie{
+		Name:    mytype.UserIDKey,
+		Value:   userID,
+		Path:    "/",
+		Domain:  cookieDomain,
+		Expires: time.Now().AddDate(0, 0, 1),
+	})
+
+	http.SetCookie(w, &http.Cookie{
+		Name:    mytype.AppIDKey,
+		Value:   appID,
+		Path:    "/",
+		Domain:  cookieDomain,
+		Expires: time.Now().AddDate(0, 0, 1),
+	})
+
+	return nil
 }

@@ -99,14 +99,14 @@ func ByThirdParty(request *mytype.LoginRequest) (string, error) {
 }
 
 func GetUserLogin(request mytype.GetUserLoginRequest) (mytype.GetUserLoginResponse, error) {
-	sessionContent, err := myredis.QueryKeyInfo(mytype.LoginKeyword, request.Session+"::"+request.UserID[:12])
+	sessionContent, err := myredis.QueryKeyInfo(mytype.LoginKeyword, request.AppLoginSession)
 	if err == redis.Nil {
 		return mytype.GetUserLoginResponse{}, nil
 	}
 	if err != nil {
 		return mytype.GetUserLoginResponse{}, err
 	}
-	if sessionContent.UserID != request.UserID || sessionContent.Session != request.Session {
+	if sessionContent.UserID != request.UserID || sessionContent.Session != request.AppLoginSession {
 		return mytype.GetUserLoginResponse{}, xerrors.Errorf("user info not match")
 	}
 
@@ -131,4 +131,24 @@ func Logout(request mytype.LogoutRequest) error {
 	}
 
 	return nil
+}
+
+func GetSSOLogin(request mytype.GetSSOLoginRequest) (mytype.GetSSOLoginResponse, error) {
+	resp, err := myredis.QueryKeyInfo(mytype.LoginKeyword, request.LoginSession)
+	if err != nil {
+		return mytype.GetSSOLoginResponse{}, err
+	}
+
+	if resp.Session != request.LoginSession || resp.UserID != request.UserID {
+		return mytype.GetSSOLoginResponse{}, xerrors.Errorf("invalid user")
+	}
+
+	err = mygrpc.QueryUserInApplication(request.UserID, request.AppID)
+	if err != nil {
+		return mytype.GetSSOLoginResponse{}, xerrors.Errorf("user can not login into app: %v", err)
+	}
+
+	return mytype.GetSSOLoginResponse{
+		Info: resp,
+	}, nil
 }

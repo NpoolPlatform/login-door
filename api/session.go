@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	"net/http"
-	"time"
 
 	"github.com/NpoolPlatform/login-door/pkg/mytype"
 	"github.com/NpoolPlatform/login-door/pkg/response"
@@ -23,21 +22,12 @@ func RefreshSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	info := mytype.LoginSession{
-		LoginIP:    r.RemoteAddr,
-		LoginTime:  time.Now().Local().String(),
-		LoginAgent: r.UserAgent(),
-		AppID:      request.AppID,
-		UserID:     request.UserID,
-		Session:    request.Session,
-	}
-	resp, err := session.RefreshSession(&info, request)
+	err = session.RefreshSession(w, request)
 	if err != nil {
 		response.RespondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	http.SetCookie(w, &resp)
 	response.RespondwithJSON(w, http.StatusOK, mytype.RefreshSessionResponse{
 		Info: "refresh session successfully",
 	})

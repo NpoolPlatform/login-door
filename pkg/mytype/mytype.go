@@ -7,8 +7,12 @@ import (
 )
 
 const (
-	LoginKeyword   = "login"
-	SessionExpires = 12 * time.Hour
+	LoginKeyword       = "login"
+	SessionExpires     = 24 * time.Hour
+	AppIDKey           = "appid"
+	UserIDKey          = "userid"
+	LoginSessionKey    = "loginSession"
+	AppLoginSessionKey = "appLoginSession"
 )
 
 type VersionResponse struct {
@@ -137,7 +141,7 @@ type LoginResponse struct {
 // swagger:parameters getUserLogin
 type GetUserLoginRequest struct {
 	// session stored in cookie
-	Session string `json:"session"`
+	AppLoginSession string `json:"app_login_session"`
 	// user id stored in cookie
 	UserID string `json:"user_id"`
 }
@@ -147,11 +151,24 @@ type GetUserLoginResponse struct {
 	Info LoginSession `json:"info"`
 }
 
+// swagger:parameters getSSOLogin
+type GetSSOLoginRequest struct {
+	LoginSession string `json:"login_session"`
+	UserID       string `json:"user_id"`
+	AppID        string `json:"app_id"`
+}
+
+// swagger:response getSSOLoginResponse
+type GetSSOLoginResponse struct {
+	Info LoginSession `json:"info"`
+}
+
 // swagger:parameters refreshSession
 type RefreshSessionRequest struct {
-	Session string `json:"session"`
-	UserID  string `json:"user_id"`
-	AppID   string `json:"app_id"`
+	AppLoginSession string `json:"app_login_session"`
+	LoginSession    string `json:"login_session"`
+	UserID          string `json:"user_id"`
+	AppID           string `json:"app_id"`
 }
 
 // swagger:response refreshSessionResponse
