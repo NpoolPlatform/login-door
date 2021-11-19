@@ -18,7 +18,7 @@ spec:
           - path: /login-door
             backend:
               serviceName: login-door
-              servicePort: 50080
+              servicePort: 50060
 
 ---
 
@@ -42,7 +42,7 @@ spec:
           - path: /login-door
             backend:
               serviceName: login-door
-              servicePort: 50080
+              servicePort: 50060
 
 ---
 
