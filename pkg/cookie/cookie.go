@@ -9,8 +9,6 @@ import (
 	"github.com/NpoolPlatform/login-door/pkg/mytype"
 )
 
-const CookieDomain = "cookie_domain"
-
 func getCookieDomain(r *http.Request) string {
 	host := strings.Split(r.Host, ":")[0]
 	if !strings.Contains(host, ".") {

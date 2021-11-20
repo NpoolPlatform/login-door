@@ -9,10 +9,10 @@ import (
 const (
 	LoginKeyword       = "login"
 	SessionExpires     = 24 * time.Hour
-	AppIDKey           = "appid"
-	UserIDKey          = "userid"
-	LoginSessionKey    = "loginSession"
-	AppLoginSessionKey = "appLoginSession"
+	AppIDKey           = "AppID"
+	UserIDKey          = "UserID"
+	LoginSessionKey    = "Session"
+	AppLoginSessionKey = "AppSession"
 )
 
 type VersionResponse struct {
@@ -40,6 +40,8 @@ type AddProviderRequest struct {
 	ProviderLogo string `json:"provider_logo,omitempty"`
 	// ProviderURL
 	ProviderURL string `json:"provider_url,omitempty"`
+	AppID       string
+	UserID      string `json:"user_id,omitempty"`
 }
 
 // swagger:model providerInfo
@@ -59,7 +61,9 @@ type AddProviderResponse struct {
 
 // swagger:parameters updateProvider
 type UpdateProviderRequest struct {
-	Info ProviderInfo `json:"info"`
+	Info   ProviderInfo `json:"info"`
+	UserID string       `json:"user_id,omitempty"`
+	AppID  string
 }
 
 // swagger:response updateProviderResponse
@@ -75,7 +79,9 @@ type PageInfo struct {
 // swagger:parameters getProviders
 type GetAllProvidersRequest struct {
 	// page info
-	Info PageInfo `json:"info,omitempty"`
+	Info   PageInfo `json:"info,omitempty"`
+	AppID  string
+	UserID string `json:"user_id,omitempty"`
 }
 
 // swagger:response getProvidersResponse
@@ -87,6 +93,8 @@ type GetAllProvidersResponse struct {
 type DeleteProviderRequest struct {
 	// required: true
 	ProviderID uuid.UUID `json:"provider_id"`
+	AppID      string
+	UserID     string `json:"user_id,omitempty"`
 }
 
 // swagger:response deleteProviderResponse
@@ -105,9 +113,9 @@ type LoginSession struct {
 	// user login session
 	Session string `json:"session"`
 	// user id
-	UserID string `json:"user_id"`
+	UserID string
 	// app id, which app user login
-	AppID string `json:"app_id"`
+	AppID string
 }
 
 // swagger:parameters login
@@ -115,7 +123,7 @@ type LoginRequest struct {
 	// app id, which app user login
 	// in: body
 	// required: true
-	AppID    string `json:"app_id"`
+	AppID    string
 	Username string `json:"username,omitempty"`
 	Password string `json:"password,omitempty"`
 	Email    string `json:"email,omitempty"`
@@ -141,9 +149,10 @@ type LoginResponse struct {
 // swagger:parameters getUserLogin
 type GetUserLoginRequest struct {
 	// session stored in cookie
-	AppLoginSession string `json:"app_login_session"`
+	AppSession string
 	// user id stored in cookie
-	UserID string `json:"user_id"`
+	UserID string
+	AppID  string
 }
 
 // swagger:response getUserLoginResponse
@@ -153,9 +162,9 @@ type GetUserLoginResponse struct {
 
 // swagger:parameters getSSOLogin
 type GetSSOLoginRequest struct {
-	LoginSession string `json:"login_session"`
-	UserID       string `json:"user_id"`
-	AppID        string `json:"app_id"`
+	Session string
+	UserID  string
+	AppID   string
 }
 
 // swagger:response getSSOLoginResponse
@@ -165,10 +174,10 @@ type GetSSOLoginResponse struct {
 
 // swagger:parameters refreshSession
 type RefreshSessionRequest struct {
-	AppLoginSession string `json:"app_login_session"`
-	LoginSession    string `json:"login_session"`
-	UserID          string `json:"user_id"`
-	AppID           string `json:"app_id"`
+	AppSession string
+	Session    string
+	UserID     string
+	AppID      string
 }
 
 // swagger:response refreshSessionResponse
@@ -181,7 +190,8 @@ type LogoutRequest struct {
 	// session stored in cookie
 	Session string `json:"session"`
 	// user id stored in cookie
-	UserID string `json:"user_id"`
+	UserID string
+	AppID  string
 }
 
 // swagger:response logoutResponse

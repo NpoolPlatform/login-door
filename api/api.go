@@ -36,6 +36,7 @@ func Register(router *chi.Mux) error {
 	router.Post("/v1/get/user/login", GetUserLogin)       // nolint: typecheck
 	router.Post("/v1/logout", Logout)                     // nolint: typecheck
 	router.Post("/v1/refresh/session", RefreshSession)    // nolint: typecheck
+	router.Post("/v1/get/sso/login", GetSSOLogin)         // nolint: typecheck
 
 	return nil
 }

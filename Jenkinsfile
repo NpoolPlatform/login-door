@@ -79,7 +79,6 @@ pipeline {
             cd .apollo-base-config
             ./apollo-base-config.sh $APP_ID $TARGET_ENV $vhost
             ./apollo-item-config.sh $APP_ID $TARGET_ENV $vhost database_name user_management
-            ./apollo-item-config.sh $APP_ID $TARGET_ENV $vhost cookie_domain $COOKIE_DOMAIN
             cd -
           done
           kubectl exec --namespace kube-system $devboxpod -- make -C /tmp/$servicename deps before-test test after-test
@@ -132,7 +131,6 @@ pipeline {
             cd .apollo-base-config
             ./apollo-base-config.sh $APP_ID $TARGET_ENV $vhost
             ./apollo-item-config.sh $APP_ID $TARGET_ENV $vhost database_name user_management
-            ./apollo-item-config.sh $APP_ID $TARGET_ENV $vhost cookie_domain $COOKIE_DOMAIN
           done
         '''.stripIndent())
       }

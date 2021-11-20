@@ -20,25 +20,25 @@ func GenerateSession(size int) (string, error) {
 }
 
 func RefreshSession(r *http.Request, w http.ResponseWriter, request mytype.RefreshSessionRequest) error {
-	loginResp, err := myredis.QueryKeyInfo(mytype.LoginKeyword, request.LoginSession)
+	loginResp, err := myredis.QueryKeyInfo(mytype.LoginKeyword, request.Session)
 	if err != nil {
 		return err
 	}
 
-	appLoginResp, err := myredis.QueryKeyInfo(mytype.LoginKeyword, request.AppLoginSession)
+	appLoginResp, err := myredis.QueryKeyInfo(mytype.LoginKeyword, request.AppSession)
 	if err != nil {
 		return err
 	}
 
-	err = myredis.InsertKeyInfo(mytype.LoginKeyword, request.LoginSession, loginResp, mytype.SessionExpires)
+	err = myredis.InsertKeyInfo(mytype.LoginKeyword, request.Session, loginResp, mytype.SessionExpires)
 	if err != nil {
 		return err
 	}
 
-	err = myredis.InsertKeyInfo(mytype.LoginKeyword, request.AppLoginSession, appLoginResp, mytype.SessionExpires)
+	err = myredis.InsertKeyInfo(mytype.LoginKeyword, request.AppSession, appLoginResp, mytype.SessionExpires)
 	if err != nil {
 		return err
 	}
-	err = cookie.SetAllCookie(r, request.LoginSession, request.AppLoginSession, request.UserID, request.AppID, w)
+	err = cookie.SetAllCookie(r, request.Session, request.AppSession, request.UserID, request.AppID, w)
 	return err
 }

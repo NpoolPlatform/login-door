@@ -17,15 +17,6 @@ import (
 	"google.golang.org/grpc"
 )
 
-const (
-	VerificationService     = verificationconst.ServiceName
-	VerificationServicePort = "50091"
-	UserService             = userconst.ServiceName
-	UserServicePort         = "50071"
-	ApplicationService      = applicationconst.ServiceName
-	ApplicationServicePort  = "50081"
-)
-
 func newVerificationGrpcConn() (*grpc.ClientConn, error) {
 	conn, err := mygrpc.GetGRPCConn(verificationconst.ServiceName, mygrpc.GRPCTAG)
 	if err != nil {
@@ -70,7 +61,7 @@ func CreateTestUser(appID string) (*pbUser.SignupResponse, error) {
 	client := pbUser.NewUserClient(conn)
 
 	resp, err := client.SignUp(context.Background(), &pbUser.SignupRequest{
-		AppId:    appID,
+		AppID:    appID,
 		Username: uuid.New().String(),
 		Password: "12345679",
 	})
@@ -89,7 +80,7 @@ func CreateUser(appID, providerID string, providerUserInfo *idp.UserInfo) (*pbUs
 	client := pbUser.NewUserClient(conn)
 
 	resp, err := client.AddUser(context.Background(), &pbUser.AddUserRequest{
-		AppId: appID,
+		AppID: appID,
 		UserInfo: &pbUser.UserBasicInfo{
 			DisplayName:  providerUserInfo.DisplayName,
 			Avatar:       providerUserInfo.AvatarUrl,
@@ -106,10 +97,10 @@ func CreateUser(appID, providerID string, providerUserInfo *idp.UserInfo) (*pbUs
 		return nil, xerrors.Errorf("fail to marshal provider user info: %v", err)
 	}
 	respBind, err := client.BindThirdParty(context.Background(), &pbUser.BindThirdPartyRequest{
-		UserId:           resp.Info.UserId,
-		AppId:            appID,
-		ProviderId:       providerID,
-		ProviderUserId:   providerUserInfo.Id,
+		UserID:           resp.Info.UserID,
+		AppID:            appID,
+		ProviderID:       providerID,
+		ProviderUserID:   providerUserInfo.Id,
 		UserProviderInfo: string(b),
 	})
 	if err != nil {

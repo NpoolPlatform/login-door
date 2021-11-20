@@ -13,32 +13,32 @@ func User(username, password, appID, providerID, providerUserID string, thirdPar
 			return "", xerrors.Errorf("query user exist error: %v", err)
 		}
 
-		err = mygrpc.QueryUserInApplication(resp.Info.UserId, appID)
+		err = mygrpc.QueryUserInApplication(resp.Info.UserID, appID)
 		if err != nil {
 			return "", xerrors.Errorf("user can not login into app: %v", err)
 		}
 
-		err = mygrpc.QueryUserFrozen(resp.Info.UserId)
+		err = mygrpc.QueryUserFrozen(resp.Info.UserID)
 		if err != nil {
 			return "", err
 		}
-		userID = resp.Info.UserId
+		userID = resp.Info.UserID
 	} else {
 		resp, err := mygrpc.QueryUserByUserProviderID(providerID, providerUserID)
 		if err != nil {
 			return "", nil
 		}
 
-		err = mygrpc.QueryUserInApplication(resp.Info.UserProviderInfo.UserId, appID)
+		err = mygrpc.QueryUserInApplication(resp.Info.UserProviderInfo.UserID, appID)
 		if err != nil {
 			return "", xerrors.Errorf("user can not login into app: %v", err)
 		}
 
-		err = mygrpc.QueryUserFrozen(resp.Info.UserProviderInfo.UserId)
+		err = mygrpc.QueryUserFrozen(resp.Info.UserProviderInfo.UserID)
 		if err != nil {
 			return "", err
 		}
-		userID = resp.Info.UserProviderInfo.UserId
+		userID = resp.Info.UserProviderInfo.UserID
 	}
 	return userID, nil
 }

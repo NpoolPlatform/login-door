@@ -104,7 +104,7 @@ func GetSSOLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = cookie.SetAllCookie(r, request.LoginSession, appLoginSession, request.UserID, request.AppID, w)
+	err = cookie.SetAllCookie(r, request.Session, appLoginSession, request.UserID, request.AppID, w)
 	if err != nil {
 		response.RespondWithError(w, http.StatusBadRequest, err.Error())
 		return

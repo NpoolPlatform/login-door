@@ -99,14 +99,14 @@ func ByThirdParty(request *mytype.LoginRequest) (string, error) {
 }
 
 func GetUserLogin(request mytype.GetUserLoginRequest) (mytype.GetUserLoginResponse, error) {
-	sessionContent, err := myredis.QueryKeyInfo(mytype.LoginKeyword, request.AppLoginSession)
+	sessionContent, err := myredis.QueryKeyInfo(mytype.LoginKeyword, request.AppSession)
 	if err == redis.Nil {
 		return mytype.GetUserLoginResponse{}, nil
 	}
 	if err != nil {
 		return mytype.GetUserLoginResponse{}, err
 	}
-	if sessionContent.UserID != request.UserID || sessionContent.Session != request.AppLoginSession {
+	if sessionContent.UserID != request.UserID || sessionContent.Session != request.AppSession {
 		return mytype.GetUserLoginResponse{}, xerrors.Errorf("user info not match")
 	}
 
@@ -134,12 +134,12 @@ func Logout(request mytype.LogoutRequest) error {
 }
 
 func GetSSOLogin(request mytype.GetSSOLoginRequest) (mytype.GetSSOLoginResponse, error) {
-	resp, err := myredis.QueryKeyInfo(mytype.LoginKeyword, request.LoginSession)
+	resp, err := myredis.QueryKeyInfo(mytype.LoginKeyword, request.Session)
 	if err != nil {
 		return mytype.GetSSOLoginResponse{}, err
 	}
 
-	if resp.Session != request.LoginSession || resp.UserID != request.UserID {
+	if resp.Session != request.Session || resp.UserID != request.UserID {
 		return mytype.GetSSOLoginResponse{}, xerrors.Errorf("invalid user")
 	}
 
