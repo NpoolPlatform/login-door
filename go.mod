@@ -4,9 +4,9 @@ go 1.16
 
 require (
 	entgo.io/ent v0.9.1
-	github.com/NpoolPlatform/application-management v0.0.0-20211120125609-90cdc20087f0
+	github.com/NpoolPlatform/application-management v0.0.0-20211121083819-37bbecbe7ab6
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20211119115808-35513fcc0b81
-	github.com/NpoolPlatform/user-management v0.0.0-20211120164045-9288c0ecc4e1
+	github.com/NpoolPlatform/user-management v0.0.0-20211121085012-30d5e0719a4f
 	github.com/NpoolPlatform/verification-door v0.0.0-20211121052053-956997ade2a4
 	github.com/casbin/casdoor v1.2.0
 	github.com/go-chi/chi/v5 v5.0.5
