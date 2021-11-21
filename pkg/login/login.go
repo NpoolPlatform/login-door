@@ -20,7 +20,7 @@ func Login(r *http.Request, request *mytype.LoginRequest) (*pbUser.UserBasicInfo
 		return ByUsername(request)
 	}
 	if request.Email != "" {
-		return ByEmailVerifyCode(request)
+		return ByEmail(request)
 	}
 	if request.Provider != "" {
 		return ByThirdParty(request)
@@ -36,17 +36,8 @@ func ByUsername(request *mytype.LoginRequest) (*pbUser.UserBasicInfo, error) {
 	return resp, nil
 }
 
-func ByEmailVerifyCode(request *mytype.LoginRequest) (*pbUser.UserBasicInfo, error) {
-	if request.VerifyCode == "" {
-		return nil, xerrors.Errorf("verify code can not be empty")
-	}
-
-	err := mygrpc.VerifyCode(request.Email, request.VerifyCode)
-	if err != nil {
-		return nil, xerrors.Errorf("verify code is wrong")
-	}
-
-	resp, err := exist.User(request.Email, "", request.AppID, "", "", false)
+func ByEmail(request *mytype.LoginRequest) (*pbUser.UserBasicInfo, error) {
+	resp, err := exist.User(request.Email, request.Password, request.AppID, "", "", false)
 	if err != nil {
 		return nil, err
 	}
