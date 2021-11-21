@@ -110,7 +110,7 @@ func CreateUser(appID, providerID string, providerUserInfo *idp.UserInfo) (*pbUs
 	return respBind, nil
 }
 
-func QueryUserExist(username, password string) (*pbUser.QueryUserExistResponse, error) {
+func QueryUserExist(username, password string) (*pbUser.UserBasicInfo, error) {
 	conn, err := newUserGrpcConn()
 	if err != nil {
 		return nil, err
@@ -124,10 +124,10 @@ func QueryUserExist(username, password string) (*pbUser.QueryUserExistResponse, 
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	return resp.Info, nil
 }
 
-func QueryUserByUserProviderID(providerID, userProviderID string) (*pbUser.QueryUserByUserProviderIDResponse, error) {
+func QueryUserByUserProviderID(providerID, userProviderID string) (*pbUser.UserBasicInfo, error) {
 	conn, err := newUserGrpcConn()
 	if err != nil {
 		return nil, err
@@ -141,7 +141,7 @@ func QueryUserByUserProviderID(providerID, userProviderID string) (*pbUser.Query
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	return resp.Info.UserBasicInfo, nil
 }
 
 func QueryUserFrozen(userID string) error {

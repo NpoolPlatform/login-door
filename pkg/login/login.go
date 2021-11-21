@@ -9,12 +9,13 @@ import (
 	mygrpc "github.com/NpoolPlatform/login-door/pkg/grpc"
 	"github.com/NpoolPlatform/login-door/pkg/mytype"
 	myredis "github.com/NpoolPlatform/login-door/pkg/redis"
+	pbUser "github.com/NpoolPlatform/user-management/message/npool"
 	"github.com/casbin/casdoor/idp"
 	"github.com/go-redis/redis/v8"
 	"golang.org/x/xerrors"
 )
 
-func Login(r *http.Request, request *mytype.LoginRequest) (string, error) {
+func Login(r *http.Request, request *mytype.LoginRequest) (*pbUser.UserBasicInfo, error) {
 	if request.Username != "" {
 		return ByUsername(request)
 	}
@@ -24,67 +25,67 @@ func Login(r *http.Request, request *mytype.LoginRequest) (string, error) {
 	if request.Provider != "" {
 		return ByThirdParty(request)
 	}
-	return "", xerrors.Errorf("fail to login")
+	return nil, xerrors.Errorf("fail to login")
 }
 
-func ByUsername(request *mytype.LoginRequest) (string, error) {
-	userID, err := exist.User(request.Username, request.Password, request.AppID, "", "", false)
+func ByUsername(request *mytype.LoginRequest) (*pbUser.UserBasicInfo, error) {
+	resp, err := exist.User(request.Username, request.Password, request.AppID, "", "", false)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return userID, nil
+	return resp, nil
 }
 
-func ByEmailVerifyCode(request *mytype.LoginRequest) (string, error) {
+func ByEmailVerifyCode(request *mytype.LoginRequest) (*pbUser.UserBasicInfo, error) {
 	if request.VerifyCode == "" {
-		return "", xerrors.Errorf("verify code can not be empty")
+		return nil, xerrors.Errorf("verify code can not be empty")
 	}
 
 	err := mygrpc.VerifyCode(request.Email, request.VerifyCode)
 	if err != nil {
-		return "", xerrors.Errorf("verify code is wrong")
+		return nil, xerrors.Errorf("verify code is wrong")
 	}
 
-	userID, err := exist.User(request.Email, "", request.AppID, "", "", false)
+	resp, err := exist.User(request.Email, "", request.AppID, "", "", false)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return userID, nil
+	return resp, nil
 }
 
-func ByThirdParty(request *mytype.LoginRequest) (string, error) {
+func ByThirdParty(request *mytype.LoginRequest) (*pbUser.UserBasicInfo, error) {
 	if request.Code == "" || request.State == "" {
-		return "", xerrors.Errorf("you need to auth in third party provider first")
+		return nil, xerrors.Errorf("you need to auth in third party provider first")
 	}
 
 	providerInfo, err := provider.Get(context.Background(), request.Provider)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	idProvider := idp.GetIdProvider(providerInfo.ProviderName, providerInfo.ClientID, providerInfo.ClientSecret, request.RedirectURL)
 	if idProvider == nil {
-		return "", xerrors.Errorf("get id provider empty")
+		return nil, xerrors.Errorf("get id provider empty")
 	}
 
 	token, err := idProvider.GetToken(request.Code)
 	if err != nil {
-		return "", xerrors.Errorf("get provider token error: %v", err)
+		return nil, xerrors.Errorf("get provider token error: %v", err)
 	}
 
 	if !token.Valid() {
-		return "", xerrors.Errorf("invalid token")
+		return nil, xerrors.Errorf("invalid token")
 	}
 
 	providerUserInfo, err := idProvider.GetUserInfo(token)
 	if err != nil {
-		return "", xerrors.Errorf("fail to login into third party provider: %v", err)
+		return nil, xerrors.Errorf("fail to login into third party provider: %v", err)
 	}
 
-	userID, err := exist.User("", "", request.AppID, request.Provider, providerUserInfo.Id, true)
+	resp, err := exist.User("", "", request.AppID, request.Provider, providerUserInfo.Id, true)
 	// provider user exist in our system.
-	if err == nil && userID != "" {
-		return userID, nil
+	if err == nil && resp != nil {
+		return resp, nil
 	}
 	// provider user id doesn't exist in our system.
 	// provider has still not bind to a user.
@@ -95,7 +96,7 @@ func ByThirdParty(request *mytype.LoginRequest) (string, error) {
 	// 		// provider user doesn't exist by query its email.
 	// 	}
 	// }
-	return "", xerrors.Errorf("fail to login")
+	return nil, xerrors.Errorf("fail to login")
 }
 
 func GetUserLogin(request mytype.GetUserLoginRequest) (mytype.GetUserLoginResponse, error) {

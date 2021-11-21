@@ -3,6 +3,7 @@ package mytype
 import (
 	"time"
 
+	pbUser "github.com/NpoolPlatform/user-management/message/npool"
 	"github.com/google/uuid"
 )
 
@@ -16,7 +17,7 @@ const (
 )
 
 type VersionResponse struct {
-	Info string `json:"info"`
+	Info string
 }
 
 // swagger:parameters addProvider
@@ -25,93 +26,93 @@ type AddProviderRequest struct {
 	//
 	// in: body
 	// required: true
-	ClientID string `json:"client_id"`
+	ClientID string
 	// ClientSecret
 	//
 	// in: body
 	// required: true
-	ClientSecret string `json:"client_secret"`
+	ClientSecret string
 	// ProviderName, such as: github, google, wechat and so on
 	//
 	// in: body
 	// required: true
-	ProviderName string `json:"provider_name"`
+	ProviderName string
 	// ProviderLogo
-	ProviderLogo string `json:"provider_logo,omitempty"`
+	ProviderLogo string
 	// ProviderURL
-	ProviderURL string `json:"provider_url,omitempty"`
+	ProviderURL string
 	AppID       string
-	UserID      string `json:"user_id,omitempty"`
+	UserID      string
 }
 
 // swagger:model providerInfo
 type ProviderInfo struct {
-	ProviderID   uuid.UUID `json:"provider_id"`
-	ClientID     string    `json:"client_id"`
-	ClientSecret string    `json:"client_secret"`
-	ProviderName string    `json:"provider_name"`
-	ProviderLogo string    `json:"provider_logo,omitempty"`
-	ProviderURL  string    `json:"provider_url,omitempty"`
+	ProviderID   uuid.UUID
+	ClientID     string
+	ClientSecret string
+	ProviderName string
+	ProviderLogo string
+	ProviderURL  string
 }
 
 // swagger:response addProviderResponse
 type AddProviderResponse struct {
-	Info ProviderInfo `json:"info"`
+	Info ProviderInfo
 }
 
 // swagger:parameters updateProvider
 type UpdateProviderRequest struct {
-	Info   ProviderInfo `json:"info"`
-	UserID string       `json:"user_id,omitempty"`
+	Info   ProviderInfo
+	UserID string
 	AppID  string
 }
 
 // swagger:response updateProviderResponse
 type UpdateProviderResponse struct {
-	Info ProviderInfo `json:"info"`
+	Info ProviderInfo
 }
 
 type PageInfo struct {
-	PageIndex int32 `json:"page_index"`
-	PageSize  int32 `json:"page_size"`
+	PageIndex int32
+	PageSize  int32
 }
 
 // swagger:parameters getProviders
 type GetAllProvidersRequest struct {
 	// page info
-	Info   PageInfo `json:"info,omitempty"`
+	Info   PageInfo
 	AppID  string
-	UserID string `json:"user_id,omitempty"`
+	UserID string
 }
 
 // swagger:response getProvidersResponse
 type GetAllProvidersResponse struct {
-	Infos []ProviderInfo `json:"infos"`
+	Infos []ProviderInfo
 }
 
 // swagger:parameters deleteProvider
 type DeleteProviderRequest struct {
 	// required: true
-	ProviderID uuid.UUID `json:"provider_id"`
+	ProviderID uuid.UUID
 	AppID      string
-	UserID     string `json:"user_id,omitempty"`
+	UserID     string
 }
 
 // swagger:response deleteProviderResponse
 type DeleteProviderResponse struct {
-	Info string `json:"info"`
+	Info string
 }
 
 // swagger:model loginSession
 type LoginSession struct {
 	// login from ip
-	LoginIP string `json:"login_ip"`
+	LoginIP string
 	// when user login
-	LoginTime string `json:"login_time"`
+	LoginTime string
 	// agent user login from
-	LoginAgent string `json:"login_agent"`
+	LoginAgent string
 	// user login session
-	Session string `json:"session"`
+	Session string
 	// user id
 	UserID string
 	// app id, which app user login
@@ -124,26 +125,26 @@ type LoginRequest struct {
 	// in: body
 	// required: true
 	AppID    string
-	Username string `json:"username,omitempty"`
-	Password string `json:"password,omitempty"`
-	Email    string `json:"email,omitempty"`
-	Phone    string `json:"phone,omitempty"`
+	Username string
+	Password string
+	Email    string
+	Phone    string
 	// email or phone verify code
-	VerifyCode string `json:"verify_code,omitempty"`
+	VerifyCode string
 	// Provider id
-	Provider string `json:"provider,omitempty"`
+	Provider string
 	// code is returned by provider after user authenticate from provider
-	Code string `json:"code,omitempty"`
+	Code string
 	// state is returned by provider after user authenticate from provider
-	State string `json:"state,omitempty"`
+	State string
 	// redirect url tell provider which callback it need to return after get user info
-	RedirectURL string `json:"redirect_url,omitempty"`
-	Method      string `json:"method,omitempty"`
+	RedirectURL string
+	Method      string
 }
 
 // swagger:response loginResponse
 type LoginResponse struct {
-	Info string `json:"info"`
+	Info *pbUser.UserBasicInfo
 }
 
 // swagger:parameters getUserLogin
@@ -157,7 +158,7 @@ type GetUserLoginRequest struct {
 
 // swagger:response getUserLoginResponse
 type GetUserLoginResponse struct {
-	Info LoginSession `json:"info"`
+	Info LoginSession
 }
 
 // swagger:parameters getSSOLogin
@@ -169,7 +170,7 @@ type GetSSOLoginRequest struct {
 
 // swagger:response getSSOLoginResponse
 type GetSSOLoginResponse struct {
-	Info LoginSession `json:"info"`
+	Info LoginSession
 }
 
 // swagger:parameters refreshSession
@@ -182,13 +183,13 @@ type RefreshSessionRequest struct {
 
 // swagger:response refreshSessionResponse
 type RefreshSessionResponse struct {
-	Info string `json:"info"`
+	Info string
 }
 
 // swagger:parameters logout
 type LogoutRequest struct {
 	// session stored in cookie
-	Session string `json:"session"`
+	Session string
 	// user id stored in cookie
 	UserID string
 	AppID  string
@@ -196,5 +197,5 @@ type LogoutRequest struct {
 
 // swagger:response logoutResponse
 type LogoutResponse struct {
-	Info string `json:"info"`
+	Info string
 }

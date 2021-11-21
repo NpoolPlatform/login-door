@@ -45,7 +45,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		LoginTime:  time.Now().Local().String(),
 		LoginAgent: r.UserAgent(),
 		Session:    loginSession,
-		UserID:     resp,
+		UserID:     resp.UserID,
 	}
 
 	err = myredis.InsertKeyInfo(mytype.LoginKeyword, loginSession, infoLogin, mytype.SessionExpires)
@@ -60,7 +60,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		LoginAgent: r.UserAgent(),
 		Session:    appLoginSession,
 		AppID:      request.AppID,
-		UserID:     resp,
+		UserID:     resp.UserID,
 	}
 	err = myredis.InsertKeyInfo(mytype.LoginKeyword, appLoginSession, infoAppLogin, mytype.SessionExpires)
 	if err != nil {
@@ -68,7 +68,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = cookie.SetAllCookie(r, loginSession, appLoginSession, resp, request.AppID, w)
+	err = cookie.SetAllCookie(r, loginSession, appLoginSession, resp.UserID, request.AppID, w)
 	if err != nil {
 		response.RespondWithError(w, http.StatusBadRequest, err.Error())
 		return
@@ -76,7 +76,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/", http.StatusFound)
 	response.RespondwithJSON(w, http.StatusOK, mytype.LoginResponse{
-		Info: "login successfully",
+		Info: resp,
 	})
 }
 
