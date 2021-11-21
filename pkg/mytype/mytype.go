@@ -144,7 +144,8 @@ type LoginRequest struct {
 
 // swagger:response loginResponse
 type LoginResponse struct {
-	Info *pbUser.UserBasicInfo
+	Info        *pbUser.UserBasicInfo
+	RedirectURL string
 }
 
 // swagger:parameters getUserLogin

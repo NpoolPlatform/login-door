@@ -75,9 +75,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp.Password = ""
-	http.Redirect(w, r, "/", http.StatusFound)
 	response.RespondwithJSON(w, http.StatusOK, mytype.LoginResponse{
-		Info: resp,
+		Info:        resp,
+		RedirectURL: request.RedirectURL,
 	})
 }
 
@@ -157,7 +157,6 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 		Expires: time.Now().Add(-100 * time.Hour),
 		Path:    "/",
 	})
-	http.Redirect(w, r, "/", http.StatusFound)
 	response.RespondwithJSON(w, http.StatusOK, mytype.LogoutResponse{
 		Info: "logout successfully",
 	})
