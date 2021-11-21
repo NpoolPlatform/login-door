@@ -38,13 +38,13 @@ func TestLogin(t *testing.T) {
 	}
 	fmt.Println("user info is", userInfo)
 
-	userID, err := ByUsername(&mytype.LoginRequest{
+	resp, err := ByUsername(&mytype.LoginRequest{
 		AppID:    appInfo.Info.ID,
 		Username: userInfo.Info.Username,
 		Password: "12345679",
 	})
 	fmt.Println(err)
 	if assert.Nil(t, err) {
-		assert.Equal(t, userInfo.Info.UserID, userID)
+		assert.Equal(t, userInfo.Info.UserID, resp.UserID)
 	}
 }
