@@ -74,6 +74,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	resp.Password = ""
 	http.Redirect(w, r, "/", http.StatusFound)
 	response.RespondwithJSON(w, http.StatusOK, mytype.LoginResponse{
 		Info: resp,
