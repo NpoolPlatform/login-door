@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"github.com/NpoolPlatform/login-door/pkg/db/ent/loginrecord"
 	"github.com/NpoolPlatform/login-door/pkg/db/ent/provider"
 	"github.com/NpoolPlatform/login-door/pkg/db/ent/schema"
 	"github.com/google/uuid"
@@ -12,6 +13,16 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	loginrecordFields := schema.LoginRecord{}.Fields()
+	_ = loginrecordFields
+	// loginrecordDescLoginTime is the schema descriptor for login_time field.
+	loginrecordDescLoginTime := loginrecordFields[3].Descriptor()
+	// loginrecord.DefaultLoginTime holds the default value on creation for the login_time field.
+	loginrecord.DefaultLoginTime = loginrecordDescLoginTime.Default.(func() uint32)
+	// loginrecordDescID is the schema descriptor for id field.
+	loginrecordDescID := loginrecordFields[0].Descriptor()
+	// loginrecord.DefaultID holds the default value on creation for the id field.
+	loginrecord.DefaultID = loginrecordDescID.Default.(func() uuid.UUID)
 	providerFields := schema.Provider{}.Fields()
 	_ = providerFields
 	// providerDescCreateAt is the schema descriptor for create_at field.

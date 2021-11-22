@@ -27,16 +27,19 @@ type Server struct {
 func Register(router *chi.Mux) error {
 	router.Use(middleware.Heartbeat("/myhealth"))
 
-	router.Post("/version", Version)                      // nolint: typecheck
-	router.Post("/v1/add/provider", AddProvider)          // nolint: typecheck
-	router.Post("/v1/update/provider", UpdateProvider)    // nolint: typecheck
-	router.Post("/v1/get/all/providers", GetAllProviders) // nolint: typecheck
-	router.Post("/v1/delete/provider", DeleteProvider)    // nolint: typecheck
-	router.Post("/v1/login", Login)                       // nolint: typecheck
-	router.Post("/v1/get/user/login", GetUserLogin)       // nolint: typecheck
-	router.Post("/v1/logout", Logout)                     // nolint: typecheck
-	router.Post("/v1/refresh/session", RefreshSession)    // nolint: typecheck
-	router.Post("/v1/get/sso/login", GetSSOLogin)         // nolint: typecheck
+	router.Post("/version", Version)                               // nolint: typecheck
+	router.Post("/v1/add/provider", AddProvider)                   // nolint: typecheck
+	router.Post("/v1/update/provider", UpdateProvider)             // nolint: typecheck
+	router.Post("/v1/get/all/providers", GetAllProviders)          // nolint: typecheck
+	router.Post("/v1/delete/provider", DeleteProvider)             // nolint: typecheck
+	router.Post("/v1/login", Login)                                // nolint: typecheck
+	router.Post("/v1/get/user/login", GetUserLogin)                // nolint: typecheck
+	router.Post("/v1/logout", Logout)                              // nolint: typecheck
+	router.Post("/v1/refresh/session", RefreshSession)             // nolint: typecheck
+	router.Post("/v1/get/sso/login", GetSSOLogin)                  // nolint: typecheck
+	router.Post("/v1/get/app/login/records", GetAppLoginRecords)   // nolint: typecheck
+	router.Post("/v1/get/all/login/records", GetAllLoginRecords)   // nolint: typecheck
+	router.Post("/v1/get/user/login/records", GetUserLoginRecords) // nolint: typecheck
 
 	return nil
 }

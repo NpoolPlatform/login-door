@@ -3,7 +3,8 @@ package mytype
 import (
 	"time"
 
-	pbUser "github.com/NpoolPlatform/user-management/message/npool"
+	pbapp "github.com/NpoolPlatform/application-management/message/npool"
+	pbuser "github.com/NpoolPlatform/user-management/message/npool"
 	"github.com/google/uuid"
 )
 
@@ -18,6 +19,18 @@ const (
 
 type VersionResponse struct {
 	Info string
+}
+
+type LoginRecord struct {
+	ID        string
+	UserID    string
+	AppID     string
+	LoginTime uint32
+	IP        string
+	Location  string
+	Lat       float64
+	Lon       float64
+	Timezone  string
 }
 
 // swagger:parameters addProvider
@@ -131,6 +144,8 @@ type LoginRequest struct {
 	Phone    string
 	// email or phone verify code
 	VerifyCode string
+	// google recaptcha response
+	GoogleRecaptchaResponse string
 	// Provider id
 	Provider string
 	// code is returned by provider after user authenticate from provider
@@ -142,9 +157,14 @@ type LoginRequest struct {
 	Method      string
 }
 
+type UserDetail struct {
+	BasicInfo   *pbuser.UserBasicInfo
+	UserAppInfo *pbapp.ApplicationUserDetail
+}
+
 // swagger:response loginResponse
 type LoginResponse struct {
-	Info        *pbUser.UserBasicInfo
+	Info        *UserDetail
 	RedirectURL string
 }
 
@@ -199,4 +219,37 @@ type LogoutRequest struct {
 // swagger:response logoutResponse
 type LogoutResponse struct {
 	Info string
+}
+
+// swagger:parameters getUserLoginRecords
+type GetUserLoginRecordsRequest struct {
+	UserID string
+	AppID  string
+}
+
+// swagger:response getUserLoginRecordsResponse
+type GetUserLoginRecordsResponse struct {
+	Infos []*LoginRecord
+}
+
+// swagger:parameters getAppLoginRecords
+type GetAppLoginRecordsRequest struct {
+	AppID  string
+	UserID string
+}
+
+// swagger:response getAppLoginRecordsResponse
+type GetAppLoginRecordsResponse struct {
+	Infos []*LoginRecord
+}
+
+// swagger:parameters getAllLoginRecords
+type GetLoginRecordsRequest struct {
+	AppID  string
+	UserID string
+}
+
+// swagger:response getAllLoginRecordResposne
+type GetLoginRecordsResponse struct {
+	Infos []*LoginRecord
 }

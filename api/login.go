@@ -1,11 +1,14 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"time"
 
 	"github.com/NpoolPlatform/login-door/pkg/cookie"
+	loginrecord "github.com/NpoolPlatform/login-door/pkg/crud/login-record"
+	"github.com/NpoolPlatform/login-door/pkg/location"
 	"github.com/NpoolPlatform/login-door/pkg/login"
 	"github.com/NpoolPlatform/login-door/pkg/mytype"
 	myredis "github.com/NpoolPlatform/login-door/pkg/redis"
@@ -45,7 +48,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		LoginTime:  time.Now().Local().String(),
 		LoginAgent: r.UserAgent(),
 		Session:    loginSession,
-		UserID:     resp.UserID,
+		UserID:     resp.BasicInfo.UserID,
 	}
 
 	err = myredis.InsertKeyInfo(mytype.LoginKeyword, loginSession, infoLogin, mytype.SessionExpires)
@@ -60,7 +63,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		LoginAgent: r.UserAgent(),
 		Session:    appLoginSession,
 		AppID:      request.AppID,
-		UserID:     resp.UserID,
+		UserID:     resp.BasicInfo.UserID,
 	}
 	err = myredis.InsertKeyInfo(mytype.LoginKeyword, appLoginSession, infoAppLogin, mytype.SessionExpires)
 	if err != nil {
@@ -68,13 +71,41 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = cookie.SetAllCookie(r, loginSession, appLoginSession, resp.UserID, request.AppID, w)
+	respLocation, err := location.GetLocationByIP(r.RemoteAddr)
+	if err != nil {
+		_, err := loginrecord.Create(context.Background(), &mytype.LoginRecord{
+			UserID:    resp.BasicInfo.UserID,
+			AppID:     request.AppID,
+			IP:        r.RemoteAddr,
+			LoginTime: uint32(time.Now().Unix()),
+		})
+		if err != nil {
+			response.RespondWithError(w, http.StatusBadRequest, err.Error())
+			return
+		}
+	} else {
+		_, err := loginrecord.Create(context.Background(), &mytype.LoginRecord{
+			UserID:    resp.BasicInfo.UserID,
+			AppID:     request.AppID,
+			IP:        r.RemoteAddr,
+			Lat:       float64(respLocation.Lat),
+			Lon:       float64(respLocation.Lon),
+			LoginTime: uint32(time.Now().Unix()),
+			Location:  respLocation.Country + "," + respLocation.City,
+		})
+		if err != nil {
+			response.RespondWithError(w, http.StatusBadRequest, err.Error())
+			return
+		}
+	}
+
+	err = cookie.SetAllCookie(r, loginSession, appLoginSession, resp.BasicInfo.UserID, request.AppID, w)
 	if err != nil {
 		response.RespondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	resp.Password = ""
+	resp.BasicInfo.Password = ""
 	response.RespondwithJSON(w, http.StatusOK, mytype.LoginResponse{
 		Info:        resp,
 		RedirectURL: request.RedirectURL,

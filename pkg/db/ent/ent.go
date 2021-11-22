@@ -8,6 +8,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/NpoolPlatform/login-door/pkg/db/ent/loginrecord"
 	"github.com/NpoolPlatform/login-door/pkg/db/ent/provider"
 )
 
@@ -29,7 +30,8 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
-		provider.Table: provider.ValidColumn,
+		loginrecord.Table: loginrecord.ValidColumn,
+		provider.Table:    provider.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

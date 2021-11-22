@@ -8,6 +8,24 @@ import (
 )
 
 var (
+	// LoginRecordsColumns holds the columns for the "login_records" table.
+	LoginRecordsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "user_id", Type: field.TypeUUID},
+		{Name: "app_id", Type: field.TypeUUID},
+		{Name: "login_time", Type: field.TypeUint32},
+		{Name: "ip", Type: field.TypeString},
+		{Name: "location", Type: field.TypeString},
+		{Name: "lat", Type: field.TypeFloat64},
+		{Name: "lon", Type: field.TypeFloat64},
+		{Name: "timezone", Type: field.TypeString},
+	}
+	// LoginRecordsTable holds the schema information for the "login_records" table.
+	LoginRecordsTable = &schema.Table{
+		Name:       "login_records",
+		Columns:    LoginRecordsColumns,
+		PrimaryKey: []*schema.Column{LoginRecordsColumns[0]},
+	}
 	// ProvidersColumns holds the columns for the "providers" table.
 	ProvidersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID, Unique: true},
@@ -28,6 +46,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		LoginRecordsTable,
 		ProvidersTable,
 	}
 )

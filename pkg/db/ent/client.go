@@ -10,6 +10,7 @@ import (
 	"github.com/NpoolPlatform/login-door/pkg/db/ent/migrate"
 	"github.com/google/uuid"
 
+	"github.com/NpoolPlatform/login-door/pkg/db/ent/loginrecord"
 	"github.com/NpoolPlatform/login-door/pkg/db/ent/provider"
 
 	"entgo.io/ent/dialect"
@@ -21,6 +22,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// LoginRecord is the client for interacting with the LoginRecord builders.
+	LoginRecord *LoginRecordClient
 	// Provider is the client for interacting with the Provider builders.
 	Provider *ProviderClient
 }
@@ -36,6 +39,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.LoginRecord = NewLoginRecordClient(c.config)
 	c.Provider = NewProviderClient(c.config)
 }
 
@@ -68,9 +72,10 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:      ctx,
-		config:   cfg,
-		Provider: NewProviderClient(cfg),
+		ctx:         ctx,
+		config:      cfg,
+		LoginRecord: NewLoginRecordClient(cfg),
+		Provider:    NewProviderClient(cfg),
 	}, nil
 }
 
@@ -88,15 +93,16 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		config:   cfg,
-		Provider: NewProviderClient(cfg),
+		config:      cfg,
+		LoginRecord: NewLoginRecordClient(cfg),
+		Provider:    NewProviderClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Provider.
+//		LoginRecord.
 //		Query().
 //		Count(ctx)
 //
@@ -119,7 +125,98 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.LoginRecord.Use(hooks...)
 	c.Provider.Use(hooks...)
+}
+
+// LoginRecordClient is a client for the LoginRecord schema.
+type LoginRecordClient struct {
+	config
+}
+
+// NewLoginRecordClient returns a client for the LoginRecord from the given config.
+func NewLoginRecordClient(c config) *LoginRecordClient {
+	return &LoginRecordClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `loginrecord.Hooks(f(g(h())))`.
+func (c *LoginRecordClient) Use(hooks ...Hook) {
+	c.hooks.LoginRecord = append(c.hooks.LoginRecord, hooks...)
+}
+
+// Create returns a create builder for LoginRecord.
+func (c *LoginRecordClient) Create() *LoginRecordCreate {
+	mutation := newLoginRecordMutation(c.config, OpCreate)
+	return &LoginRecordCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of LoginRecord entities.
+func (c *LoginRecordClient) CreateBulk(builders ...*LoginRecordCreate) *LoginRecordCreateBulk {
+	return &LoginRecordCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for LoginRecord.
+func (c *LoginRecordClient) Update() *LoginRecordUpdate {
+	mutation := newLoginRecordMutation(c.config, OpUpdate)
+	return &LoginRecordUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *LoginRecordClient) UpdateOne(lr *LoginRecord) *LoginRecordUpdateOne {
+	mutation := newLoginRecordMutation(c.config, OpUpdateOne, withLoginRecord(lr))
+	return &LoginRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *LoginRecordClient) UpdateOneID(id uuid.UUID) *LoginRecordUpdateOne {
+	mutation := newLoginRecordMutation(c.config, OpUpdateOne, withLoginRecordID(id))
+	return &LoginRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for LoginRecord.
+func (c *LoginRecordClient) Delete() *LoginRecordDelete {
+	mutation := newLoginRecordMutation(c.config, OpDelete)
+	return &LoginRecordDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *LoginRecordClient) DeleteOne(lr *LoginRecord) *LoginRecordDeleteOne {
+	return c.DeleteOneID(lr.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *LoginRecordClient) DeleteOneID(id uuid.UUID) *LoginRecordDeleteOne {
+	builder := c.Delete().Where(loginrecord.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &LoginRecordDeleteOne{builder}
+}
+
+// Query returns a query builder for LoginRecord.
+func (c *LoginRecordClient) Query() *LoginRecordQuery {
+	return &LoginRecordQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a LoginRecord entity by its id.
+func (c *LoginRecordClient) Get(ctx context.Context, id uuid.UUID) (*LoginRecord, error) {
+	return c.Query().Where(loginrecord.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *LoginRecordClient) GetX(ctx context.Context, id uuid.UUID) *LoginRecord {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *LoginRecordClient) Hooks() []Hook {
+	return c.hooks.LoginRecord
 }
 
 // ProviderClient is a client for the Provider schema.
