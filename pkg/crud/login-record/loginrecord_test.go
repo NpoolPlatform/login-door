@@ -25,6 +25,9 @@ func init() {
 }
 
 func TestLoginRecordCRUD(t *testing.T) {
+	if runByGithubAction, err := strconv.ParseBool(os.Getenv("RUN_BY_GITHUB_ACTION")); err == nil && runByGithubAction {
+		return
+	}
 	userID := uuid.New().String()
 	appID := uuid.New().String()
 	resp, err := location.GetLocationByIP("218.77.129.195")
