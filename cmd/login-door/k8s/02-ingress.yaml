@@ -15,7 +15,7 @@ spec:
     - host: api.npool.top
       http: &http_appid_userid_rules
         paths:
-          - path: /login-door
+          - path: /api/login-door
             backend:
               serviceName: login-door
               servicePort: 50060
@@ -41,11 +41,11 @@ spec:
     - host: api.npool.top
       http: &http_appid_userid_session_rules
         paths:
-          - path: /login-door/v1/get/user/login
+          - path: /api/login-door/v1/get/user/login
             backend:
               serviceName: login-door
               servicePort: 50060
-          - path: /login-door/v1/get/sso/login
+          - path: /api/login-door/v1/get/sso/login
             backend:
               serviceName: login-door
               servicePort: 50060
@@ -71,7 +71,7 @@ spec:
     - host: api.npool.top
       http: &http_appid_userid_session_appsession_rules
         paths:
-          - path: /login-door/v1/refresh/session
+          - path: /api/login-door/v1/refresh/session
             backend:
               serviceName: login-door
               servicePort: 50060
@@ -97,7 +97,7 @@ spec:
     - host: api.npool.top
       http: &http_appid_rules
         paths:
-          - path: /login-door/v1/login
+          - path: /api/login-door/v1/login
             backend:
               serviceName: login-door
               servicePort: 50060
@@ -123,7 +123,7 @@ spec:
     - host: api.npool.top
       http: &http_rules
         paths:
-          - path: /login-door/version
+          - path: /api/login-door/version
             backend:
               serviceName: login-door
               servicePort: 50060
@@ -140,7 +140,7 @@ metadata:
 spec:
   stripPrefix:
     prefixes:
-      - /login-door
+      - /api/login-door
 
 ---
 
