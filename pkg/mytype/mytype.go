@@ -158,8 +158,8 @@ type LoginRequest struct {
 }
 
 type UserDetail struct {
-	BasicInfo   *pbuser.UserBasicInfo
-	UserAppInfo *pbapp.ApplicationUserDetail
+	UserBasicInfo *pbuser.UserBasicInfo
+	UserAppInfo   *pbapp.ApplicationUserDetail
 }
 
 // swagger:response loginResponse

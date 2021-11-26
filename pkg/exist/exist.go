@@ -50,7 +50,7 @@ func User(username, password, appID, providerID, providerUserID string, thirdPar
 	}
 
 	return &mytype.UserDetail{
-		BasicInfo:   userBasicInfo,
-		UserAppInfo: resp.Info,
+		UserBasicInfo: userBasicInfo,
+		UserAppInfo:   resp.Info,
 	}, nil
 }

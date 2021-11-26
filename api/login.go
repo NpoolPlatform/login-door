@@ -48,7 +48,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		LoginTime:  time.Now().Local().String(),
 		LoginAgent: r.UserAgent(),
 		Session:    loginSession,
-		UserID:     resp.BasicInfo.UserID,
+		UserID:     resp.UserBasicInfo.UserID,
 	}
 
 	err = myredis.InsertKeyInfo(mytype.LoginKeyword, loginSession, infoLogin, mytype.SessionExpires)
@@ -63,7 +63,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		LoginAgent: r.UserAgent(),
 		Session:    appLoginSession,
 		AppID:      request.AppID,
-		UserID:     resp.BasicInfo.UserID,
+		UserID:     resp.UserBasicInfo.UserID,
 	}
 	err = myredis.InsertKeyInfo(mytype.LoginKeyword, appLoginSession, infoAppLogin, mytype.SessionExpires)
 	if err != nil {
@@ -74,7 +74,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	respLocation, err := location.GetLocationByIP(r.RemoteAddr)
 	if err != nil {
 		_, err := loginrecord.Create(context.Background(), &mytype.LoginRecord{
-			UserID:    resp.BasicInfo.UserID,
+			UserID:    resp.UserBasicInfo.UserID,
 			AppID:     request.AppID,
 			IP:        r.RemoteAddr,
 			LoginTime: uint32(time.Now().Unix()),
@@ -85,7 +85,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		_, err := loginrecord.Create(context.Background(), &mytype.LoginRecord{
-			UserID:    resp.BasicInfo.UserID,
+			UserID:    resp.UserBasicInfo.UserID,
 			AppID:     request.AppID,
 			IP:        r.RemoteAddr,
 			Lat:       float64(respLocation.Lat),
@@ -99,13 +99,13 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	err = cookie.SetAllCookie(r, loginSession, appLoginSession, resp.BasicInfo.UserID, request.AppID, w)
+	err = cookie.SetAllCookie(r, loginSession, appLoginSession, resp.UserBasicInfo.UserID, request.AppID, w)
 	if err != nil {
 		response.RespondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	resp.BasicInfo.Password = ""
+	resp.UserBasicInfo.Password = ""
 	response.RespondwithJSON(w, http.StatusOK, mytype.LoginResponse{
 		Info:        resp,
 		RedirectURL: request.RedirectURL,

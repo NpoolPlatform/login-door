@@ -45,6 +45,6 @@ func TestLogin(t *testing.T) {
 	})
 	fmt.Println(err)
 	if assert.Nil(t, err) {
-		assert.Equal(t, userInfo.Info.UserID, resp.BasicInfo.UserID)
+		assert.Equal(t, userInfo.Info.UserID, resp.UserBasicInfo.UserID)
 	}
 }
