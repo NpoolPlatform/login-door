@@ -128,8 +128,8 @@ metadata:
   name: login-door-ingress
   namespace: kube-system
   annotations:
-    k8s.kuboard.cn/displayName: login-door-npool
-    k8s.kuboard.cn/workload: login-door-npool
+    k8s.kuboard.cn/displayName: login-door
+    k8s.kuboard.cn/workload: login-door
     kubernetes.io/ingress.class: "traefik-internet"
     traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
     traefik.ingress.kubernetes.io/router.middlewares: kube-system-strip-login-door-prefix@kubernetescrd,kube-system-common-headers@kubernetescrd
