@@ -29,6 +29,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if request.Phone == "" && request.Password == "" {
+		response.RespondWithError(w, http.StatusBadRequest, "password is must, can not be null")
+		return
+	}
+
 	resp, err := login.Login(r, &request)
 	if err != nil {
 		response.RespondWithError(w, http.StatusBadRequest, err.Error())
