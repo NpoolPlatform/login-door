@@ -193,6 +193,13 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 		Expires: time.Now().Add(-100 * time.Hour),
 		Path:    "/",
 	})
+
+	http.SetCookie(w, &http.Cookie{
+		Name:    mytype.UserIDKey,
+		MaxAge:  -1,
+		Expires: time.Now().Add(-100 * time.Hour),
+		Path:    "/",
+	})
 	response.RespondwithJSON(w, http.StatusOK, mytype.LogoutResponse{
 		Info: "logout successfully",
 	})

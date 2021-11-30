@@ -34,25 +34,10 @@ func SetAllCookie(r *http.Request, loginSession, appLoginSession, userID string,
 			Domain:  cookieDomain,
 			Expires: time.Now().AddDate(0, 0, 1),
 		})
-
-		http.SetCookie(w, &http.Cookie{
-			Name:    mytype.UserIDKey,
-			Value:   userID,
-			Path:    "/",
-			Domain:  cookieDomain,
-			Expires: time.Now().AddDate(0, 0, 1),
-		})
 	} else {
 		http.SetCookie(w, &http.Cookie{
 			Name:    mytype.LoginSessionKey,
 			Value:   loginSession,
-			Path:    "/",
-			Expires: time.Now().AddDate(0, 0, 1),
-		})
-
-		http.SetCookie(w, &http.Cookie{
-			Name:    mytype.UserIDKey,
-			Value:   userID,
 			Path:    "/",
 			Expires: time.Now().AddDate(0, 0, 1),
 		})
@@ -61,6 +46,13 @@ func SetAllCookie(r *http.Request, loginSession, appLoginSession, userID string,
 	http.SetCookie(w, &http.Cookie{
 		Name:    mytype.AppLoginSessionKey,
 		Value:   appLoginSession,
+		Path:    "/",
+		Expires: time.Now().AddDate(0, 0, 1),
+	})
+
+	http.SetCookie(w, &http.Cookie{
+		Name:    mytype.UserIDKey,
+		Value:   userID,
 		Path:    "/",
 		Expires: time.Now().AddDate(0, 0, 1),
 	})
