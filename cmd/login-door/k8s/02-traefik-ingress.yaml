@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: login-door-appid-userid-ingress
+  name: login-door-appid-userid-appsession-ingress
   namespace: kube-system
   annotations:
     k8s.kuboard.cn/displayName: login-door-appid-userid-appsession
