@@ -56,7 +56,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		UserID:     resp.UserBasicInfo.UserID,
 	}
 
-	err = myredis.InsertKeyInfo(mytype.LoginKeyword, loginSession, infoLogin, mytype.SessionExpires)
+	err = myredis.InsertKeyInfo(mytype.LoginKeyword, resp.UserBasicInfo.UserID[:8]+loginSession, infoLogin, mytype.SessionExpires)
 	if err != nil {
 		response.RespondWithError(w, http.StatusBadRequest, err.Error())
 		return
@@ -70,7 +70,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		AppID:      request.AppID,
 		UserID:     resp.UserBasicInfo.UserID,
 	}
-	err = myredis.InsertKeyInfo(mytype.LoginKeyword, appLoginSession, infoAppLogin, mytype.SessionExpires)
+	err = myredis.InsertKeyInfo(mytype.LoginKeyword, resp.UserBasicInfo.UserID[:8]+appLoginSession, infoAppLogin, mytype.SessionExpires)
 	if err != nil {
 		response.RespondWithError(w, http.StatusBadRequest, err.Error())
 		return
@@ -104,7 +104,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	err = cookie.SetAllCookie(r, loginSession, appLoginSession, resp.UserBasicInfo.UserID, request.AppID, w)
+	err = cookie.SetAllCookie(r, loginSession, appLoginSession, resp.UserBasicInfo.UserID, w)
 	if err != nil {
 		response.RespondWithError(w, http.StatusBadRequest, err.Error())
 		return
@@ -141,7 +141,7 @@ func GetSSOLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = cookie.SetAllCookie(r, request.Session, appLoginSession, request.UserID, request.AppID, w)
+	err = cookie.SetAllCookie(r, request.Session, appLoginSession, request.UserID, w)
 	if err != nil {
 		response.RespondWithError(w, http.StatusBadRequest, err.Error())
 		return

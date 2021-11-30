@@ -106,7 +106,7 @@ func ByThirdParty(request *mytype.LoginRequest) (*mytype.UserDetail, error) {
 }
 
 func GetUserLogin(request mytype.GetUserLoginRequest) (mytype.GetUserLoginResponse, error) {
-	sessionContent, err := myredis.QueryKeyInfo(mytype.LoginKeyword, request.AppSession)
+	sessionContent, err := myredis.QueryKeyInfo(mytype.LoginKeyword, request.UserID[:8]+request.AppSession)
 	if err == redis.Nil {
 		return mytype.GetUserLoginResponse{}, nil
 	}
@@ -123,7 +123,7 @@ func GetUserLogin(request mytype.GetUserLoginRequest) (mytype.GetUserLoginRespon
 }
 
 func Logout(request mytype.LogoutRequest) error {
-	resp, err := myredis.QueryKeyInfo(mytype.LoginKeyword, request.Session)
+	resp, err := myredis.QueryKeyInfo(mytype.LoginKeyword, request.UserID[:8]+request.AppSession)
 	if err != nil {
 		return err
 	}
@@ -132,7 +132,7 @@ func Logout(request mytype.LogoutRequest) error {
 		return xerrors.Errorf("user info doesn't match")
 	}
 
-	err = myredis.DelKey(mytype.LoginKeyword, request.Session)
+	err = myredis.DelKey(mytype.LoginKeyword, request.UserID[:8]+request.AppSession)
 	if err != nil {
 		return err
 	}
@@ -141,7 +141,7 @@ func Logout(request mytype.LogoutRequest) error {
 }
 
 func GetSSOLogin(request mytype.GetSSOLoginRequest) (mytype.GetSSOLoginResponse, error) {
-	resp, err := myredis.QueryKeyInfo(mytype.LoginKeyword, request.Session)
+	resp, err := myredis.QueryKeyInfo(mytype.LoginKeyword, request.UserID[:8]+request.Session)
 	if err != nil {
 		return mytype.GetSSOLoginResponse{}, err
 	}

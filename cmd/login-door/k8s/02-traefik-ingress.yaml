@@ -1,0 +1,107 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: login-door-appid-userid-ingress
+  namespace: kube-system
+  annotations:
+    k8s.kuboard.cn/displayName: login-door-appid-userid-appsession
+    k8s.kuboard.cn/workload: login-door-appid-userid-appsession
+    kubernetes.io/ingress.class: "traefik-internet"
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/router.middlewares: kube-system-strip-login-door-prefix@kubernetescrd,kube-system-cookies-appid-to-body@kubernetescrd,kube-system-cookies-userid-to-body@kubernetescrd,kube-system-cookies-appsession-to-body@kubernetescrd,kube-system-common-headers@kubernetescrd
+
+spec:
+  rules:
+    - host: api.npool.top
+      http: &http_appid_userid_appsession_rules
+        paths:
+          - path: /api/login-door/v1/logout
+            backend:
+              serviceName: login-door
+              servicePort: 50060
+    - host: api.xpool.top
+      http: *http_appid_userid_rules
+    - host: www.npool.top
+      http: *http_appid_userid_rules
+    - host: www.xpool.top
+      http: *http_appid_userid_rules
+
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: login-door-appid-ingress
+  namespace: kube-system
+  annotations:
+    k8s.kuboard.cn/displayName: login-door-appid
+    k8s.kuboard.cn/workload: login-door-appid
+    kubernetes.io/ingress.class: "traefik-internet"
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/router.middlewares: kube-system-strip-login-door-prefix@kubernetescrd,kube-system-cookies-appid-to-body@kubernetescrd,kube-system-common-headers@kubernetescrd
+
+spec:
+  rules:
+    - host: api.npool.top
+      http: &http_appid_rules
+        paths:
+          - path: /api/login-door/v1/login
+            backend:
+              serviceName: login-door
+              servicePort: 50060
+    - host: api.xpool.top
+      http: *http_appid_rules
+    - host: www.npool.top
+      http: *http_appid_rules
+    - host: www.xpool.top
+      http: *http_appid_rules
+
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: login-door-ingress
+  namespace: kube-system
+  annotations:
+    k8s.kuboard.cn/displayName: login-door
+    k8s.kuboard.cn/workload: login-door
+    kubernetes.io/ingress.class: "traefik-internet"
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/router.middlewares: kube-system-strip-login-door-prefix@kubernetescrd,kube-system-common-headers@kubernetescrd
+
+spec:
+  rules:
+    - host: api.npool.top
+      http: &http_rules
+        paths:
+          - path: /api/login-door/version
+            backend:
+              serviceName: login-door
+              servicePort: 50060
+    - host: api.xpool.top
+      http: *http_rules
+    - host: www.npool.top
+      http: *http_rules
+    - host: www.xpool.top
+      http: *http_rules
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-login-door-prefix
+  namespace: kube-system
+spec:
+  stripPrefix:
+    prefixes:
+      - /api/login-door
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: cookies-appsession-to-body
+  namespace: kube-system
+spec:
+  cookiesToBody:
+    cookieNames:
+      - AppSession

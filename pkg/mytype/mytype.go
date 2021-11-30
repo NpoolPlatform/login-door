@@ -210,7 +210,7 @@ type RefreshSessionResponse struct {
 // swagger:parameters logout
 type LogoutRequest struct {
 	// session stored in cookie
-	Session string
+	AppSession string
 	// user id stored in cookie
 	UserID string
 	AppID  string

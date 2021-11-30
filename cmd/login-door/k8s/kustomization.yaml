@@ -2,5 +2,6 @@ commonLabels:
   # app: login-door
 
 resources:
-- 01-login-door.yaml
-- 02-ingress.yaml
+  - 01-login-door.yaml
+  - 02-traefik-ingress.yaml
+  - 03-nginx-ingress.yaml

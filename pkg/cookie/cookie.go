@@ -24,12 +24,20 @@ func getCookieDomain(r *http.Request) string {
 	return strings.Join(splitHost[len(splitHost)-2:], ".")
 }
 
-func SetAllCookie(r *http.Request, loginSession, appLoginSession, userID, appID string, w http.ResponseWriter) error {
+func SetAllCookie(r *http.Request, loginSession, appLoginSession, userID string, w http.ResponseWriter) error {
 	cookieDomain := getCookieDomain(r)
 	if cookieDomain != "" {
 		http.SetCookie(w, &http.Cookie{
 			Name:    mytype.LoginSessionKey,
 			Value:   loginSession,
+			Path:    "/",
+			Domain:  cookieDomain,
+			Expires: time.Now().AddDate(0, 0, 1),
+		})
+
+		http.SetCookie(w, &http.Cookie{
+			Name:    mytype.UserIDKey,
+			Value:   userID,
 			Path:    "/",
 			Domain:  cookieDomain,
 			Expires: time.Now().AddDate(0, 0, 1),
@@ -41,28 +49,19 @@ func SetAllCookie(r *http.Request, loginSession, appLoginSession, userID, appID 
 			Path:    "/",
 			Expires: time.Now().AddDate(0, 0, 1),
 		})
+
+		http.SetCookie(w, &http.Cookie{
+			Name:    mytype.UserIDKey,
+			Value:   userID,
+			Path:    "/",
+			Expires: time.Now().AddDate(0, 0, 1),
+		})
 	}
 
 	http.SetCookie(w, &http.Cookie{
 		Name:    mytype.AppLoginSessionKey,
 		Value:   appLoginSession,
 		Path:    "/",
-		Expires: time.Now().AddDate(0, 0, 1),
-	})
-
-	http.SetCookie(w, &http.Cookie{
-		Name:    mytype.UserIDKey,
-		Value:   userID,
-		Path:    "/",
-		Domain:  cookieDomain,
-		Expires: time.Now().AddDate(0, 0, 1),
-	})
-
-	http.SetCookie(w, &http.Cookie{
-		Name:    mytype.AppIDKey,
-		Value:   appID,
-		Path:    "/",
-		Domain:  cookieDomain,
 		Expires: time.Now().AddDate(0, 0, 1),
 	})
 
