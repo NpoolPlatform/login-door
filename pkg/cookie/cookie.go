@@ -28,33 +28,41 @@ func SetAllCookie(r *http.Request, loginSession, appLoginSession, userID string,
 	cookieDomain := getCookieDomain(r)
 	if cookieDomain != "" {
 		http.SetCookie(w, &http.Cookie{
-			Name:    mytype.LoginSessionKey,
-			Value:   loginSession,
-			Path:    "/",
-			Domain:  cookieDomain,
-			Expires: time.Now().AddDate(0, 0, 1),
+			Name:     mytype.LoginSessionKey,
+			Value:    loginSession,
+			Path:     "/",
+			Secure:   true,
+			SameSite: http.SameSite(2),
+			Domain:   cookieDomain,
+			Expires:  time.Now().AddDate(0, 0, 1),
 		})
 	} else {
 		http.SetCookie(w, &http.Cookie{
-			Name:    mytype.LoginSessionKey,
-			Value:   loginSession,
-			Path:    "/",
-			Expires: time.Now().AddDate(0, 0, 1),
+			Name:     mytype.LoginSessionKey,
+			Value:    loginSession,
+			Path:     "/",
+			Secure:   true,
+			SameSite: http.SameSite(2),
+			Expires:  time.Now().AddDate(0, 0, 1),
 		})
 	}
 
 	http.SetCookie(w, &http.Cookie{
-		Name:    mytype.AppLoginSessionKey,
-		Value:   appLoginSession,
-		Path:    "/",
-		Expires: time.Now().AddDate(0, 0, 1),
+		Name:     mytype.AppLoginSessionKey,
+		Value:    appLoginSession,
+		Path:     "/",
+		Secure:   true,
+		SameSite: http.SameSite(2),
+		Expires:  time.Now().AddDate(0, 0, 1),
 	})
 
 	http.SetCookie(w, &http.Cookie{
-		Name:    mytype.UserIDKey,
-		Value:   userID,
-		Path:    "/",
-		Expires: time.Now().AddDate(0, 0, 1),
+		Name:     mytype.UserIDKey,
+		Value:    userID,
+		Path:     "/",
+		Secure:   true,
+		SameSite: http.SameSite(2),
+		Expires:  time.Now().AddDate(0, 0, 1),
 	})
 
 	return nil
