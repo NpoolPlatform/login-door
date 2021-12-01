@@ -48,6 +48,12 @@ func ByUsername(request *mytype.LoginRequest) (*mytype.UserDetail, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	err = mygrpc.VerifyCode(request.Username, request.VerifyCode)
+	if err != nil {
+		return nil, err
+	}
+
 	return resp, nil
 }
 
