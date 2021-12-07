@@ -115,12 +115,6 @@ pipeline {
         expression { BUILD_TARGET == 'true' }
       }
       steps {
-        sh(returnStdout: true, script: '''
-          images=`docker images | grep entropypool | grep login-door | grep latest | awk '{ print $3 }'`
-          for image in $images; do
-            docker rmi $image
-          done
-        '''.stripIndent())
         sh 'DEVELOPMENT=development make generate-docker-images'
       }
     }
@@ -243,11 +237,6 @@ pipeline {
           tag=`git describe --tags $revlist`
           git reset --hard
           git checkout $tag
-
-          images=`docker images | grep entropypool | grep login-door | grep $tag | awk '{ print $3 }'`
-          for image in $images; do
-            docker rmi $image -f
-          done
         '''.stripIndent())
         sh 'DEVELOPMENT=other make generate-docker-images'
       }
@@ -259,6 +248,12 @@ pipeline {
       }
       steps {
         sh 'DEVELOPMENT=development make release-docker-images'
+        sh(returnStdout: true, script: '''
+          images=`docker images | grep entropypool | grep login-door | grep none | awk '{ print $3 }'`
+          for image in $images; do
+            docker rmi $image -f
+          done
+        '''.stripIndent())
       }
     }
 
