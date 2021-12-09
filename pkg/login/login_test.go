@@ -27,6 +27,7 @@ func TestLogin(t *testing.T) {
 	}
 
 	appInfo, err := grpc.CreaeteApp()
+	fmt.Println("err is", err)
 	if assert.Nil(t, err) {
 		assert.NotNil(t, appInfo)
 	}
@@ -44,5 +45,5 @@ func TestLogin(t *testing.T) {
 		Password: "12345679",
 	})
 	fmt.Println(err)
-	assert.NotNil(t, err)
+	assert.Nil(t, err)
 }
