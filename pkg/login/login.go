@@ -14,7 +14,7 @@ import (
 	"golang.org/x/xerrors"
 )
 
-func Login(r *http.Request, request *mytype.LoginRequest) (*mytype.UserDetail, error) {
+func Login(r *http.Request, request *mytype.LoginRequest) (*mytype.UserDetail, error) { // nolint
 	resp, err := mygrpc.GetApplication(request.AppID)
 	if err != nil {
 		return nil, xerrors.Errorf("fail to get application info: %v", err)
@@ -32,10 +32,22 @@ func Login(r *http.Request, request *mytype.LoginRequest) (*mytype.UserDetail, e
 	}
 
 	if request.Username != "" {
+		if request.Email != "" && request.Phone != "" {
+			return nil, xerrors.Errorf("cannot login with all username, email and phone")
+		}
 		return ByUsername(request)
 	}
 	if request.Email != "" {
+		if request.Username != "" && request.Phone != "" {
+			return nil, xerrors.Errorf("cannot login with all username, email and phone")
+		}
 		return ByEmail(request)
+	}
+	if request.Phone != "" {
+		if request.Email != "" && request.Username != "" {
+			return nil, xerrors.Errorf("cannot login with all username, email and phone")
+		}
+		return ByPhone(request)
 	}
 	if request.Provider != "" {
 		return ByThirdParty(request)
@@ -49,16 +61,29 @@ func ByUsername(request *mytype.LoginRequest) (*mytype.UserDetail, error) {
 		return nil, err
 	}
 
-	err = mygrpc.VerifyCode(request.Username, request.VerifyCode)
-	if err != nil {
-		return nil, err
-	}
-
 	return resp, nil
 }
 
 func ByEmail(request *mytype.LoginRequest) (*mytype.UserDetail, error) {
+	err := mygrpc.VerifyCode(request.Email, request.VerifyCode)
+	if err != nil {
+		return nil, err
+	}
+
 	resp, err := exist.User(request.Email, request.Password, request.AppID, "", "", false)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func ByPhone(request *mytype.LoginRequest) (*mytype.UserDetail, error) {
+	err := mygrpc.VerifyCode(request.Phone, request.VerifyCode)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := exist.User(request.Phone, request.Password, request.AppID, "", "", false)
 	if err != nil {
 		return nil, err
 	}

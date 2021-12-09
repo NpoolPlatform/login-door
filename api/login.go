@@ -47,30 +47,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	appLoginSession, err := session.GenerateSession(16)
-
-	infoLogin := mytype.LoginSession{
-		LoginIP:    r.RemoteAddr,
-		LoginTime:  time.Now().Local().String(),
-		LoginAgent: r.UserAgent(),
-		Session:    loginSession,
-		UserID:     resp.UserBasicInfo.UserID,
-	}
-
-	err = myredis.InsertKeyInfo(mytype.LoginKeyword, resp.UserBasicInfo.UserID[:8]+loginSession, infoLogin, mytype.SessionExpires)
-	if err != nil {
-		response.RespondWithError(w, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	infoAppLogin := mytype.LoginSession{
-		LoginIP:    r.RemoteAddr,
-		LoginTime:  time.Now().Local().String(),
-		LoginAgent: r.UserAgent(),
-		Session:    appLoginSession,
-		AppID:      request.AppID,
-		UserID:     resp.UserBasicInfo.UserID,
-	}
-	err = myredis.InsertKeyInfo(mytype.LoginKeyword, resp.UserBasicInfo.UserID[:8]+appLoginSession, infoAppLogin, mytype.SessionExpires)
 	if err != nil {
 		response.RespondWithError(w, http.StatusBadRequest, err.Error())
 		return
@@ -102,6 +78,34 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			response.RespondWithError(w, http.StatusBadRequest, err.Error())
 			return
 		}
+	}
+
+	infoLogin := mytype.LoginSession{
+		LoginIP:    r.RemoteAddr,
+		LoginTime:  time.Now().Local().String(),
+		LoginAgent: r.UserAgent(),
+		Session:    loginSession,
+		UserID:     resp.UserBasicInfo.UserID,
+	}
+
+	err = myredis.InsertKeyInfo(mytype.LoginKeyword, resp.UserBasicInfo.UserID[:8]+loginSession, infoLogin, mytype.SessionExpires)
+	if err != nil {
+		response.RespondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	infoAppLogin := mytype.LoginSession{
+		LoginIP:    r.RemoteAddr,
+		LoginTime:  time.Now().Local().String(),
+		LoginAgent: r.UserAgent(),
+		Session:    appLoginSession,
+		AppID:      request.AppID,
+		UserID:     resp.UserBasicInfo.UserID,
+	}
+	err = myredis.InsertKeyInfo(mytype.LoginKeyword, resp.UserBasicInfo.UserID[:8]+appLoginSession, infoAppLogin, mytype.SessionExpires)
+	if err != nil {
+		response.RespondWithError(w, http.StatusBadRequest, err.Error())
+		return
 	}
 
 	err = cookie.SetAllCookie(r, loginSession, appLoginSession, resp.UserBasicInfo.UserID, w)
