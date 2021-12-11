@@ -312,7 +312,7 @@ pipeline {
         expression { TARGET_ENV == 'development' }
       }
       steps {
-        sh 'sed -i "s/uhub.service.ucloud.cn/$DOCKER_REGISTRY/g" cmd/application-management/k8s/01-application-management.yaml'
+        sh 'sed -i "s/uhub.service.ucloud.cn/$DOCKER_REGISTRY/g" cmd/login-door/k8s/01-login-door.yaml'
         sh 'TAG=latest make deploy-to-k8s-cluster'
       }
     }
@@ -330,7 +330,7 @@ pipeline {
           git reset --hard
           git checkout $tag
           sed -i "s/login-door:latest/login-door:$tag/g" cmd/login-door/k8s/01-login-door.yaml
-          sed -i "s/uhub.service.ucloud.cn/$DOCKER_REGISTRY/g" cmd/application-management/k8s/01-application-management.yaml
+          sed -i "s/uhub.service.ucloud.cn/$DOCKER_REGISTRY/g" cmd/login-door/k8s/01-login-door.yaml
           TAG=$tag make deploy-to-k8s-cluster
         '''.stripIndent())
       }
@@ -355,7 +355,7 @@ pipeline {
           git reset --hard
           git checkout $tag
           sed -i "s/login-door:latest/login-door:$tag/g" cmd/login-door/k8s/01-login-door.yaml
-          sed -i "s/uhub.service.ucloud.cn/$DOCKER_REGISTRY/g" cmd/application-management/k8s/01-application-management.yaml
+          sed -i "s/uhub.service.ucloud.cn/$DOCKER_REGISTRY/g" cmd/login-door/k8s/01-login-door.yaml
           TAG=$tag make deploy-to-k8s-cluster
         '''.stripIndent())
       }
