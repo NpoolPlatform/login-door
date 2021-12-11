@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: login-door
-        image: entropypool/login-door:latest
+        image: uhub.service.ucloud.cn/entropypool/login-door:latest
         imagePullPolicy: Always
         env:
         - name: ENV_ENVIRONMENT_TARGET
