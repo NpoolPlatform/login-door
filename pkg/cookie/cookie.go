@@ -31,7 +31,7 @@ func SetAllCookie(r *http.Request, loginSession, appLoginSession, userID string,
 			Name:     mytype.LoginSessionKey,
 			Value:    loginSession,
 			Path:     "/",
-			SameSite: http.SameSite(3),
+			SameSite: http.SameSite(2),
 			Domain:   cookieDomain,
 			Expires:  time.Now().AddDate(0, 0, 1),
 		})
@@ -40,7 +40,7 @@ func SetAllCookie(r *http.Request, loginSession, appLoginSession, userID string,
 			Name:     mytype.LoginSessionKey,
 			Value:    loginSession,
 			Path:     "/",
-			SameSite: http.SameSite(3),
+			SameSite: http.SameSite(2),
 			Expires:  time.Now().AddDate(0, 0, 1),
 		})
 	}
@@ -49,7 +49,7 @@ func SetAllCookie(r *http.Request, loginSession, appLoginSession, userID string,
 		Name:     mytype.AppLoginSessionKey,
 		Value:    appLoginSession,
 		Path:     "/",
-		SameSite: http.SameSite(3),
+		SameSite: http.SameSite(2),
 		Expires:  time.Now().AddDate(0, 0, 1),
 	})
 
@@ -57,7 +57,7 @@ func SetAllCookie(r *http.Request, loginSession, appLoginSession, userID string,
 		Name:     mytype.UserIDKey,
 		Value:    userID,
 		Path:     "/",
-		SameSite: http.SameSite(3),
+		SameSite: http.SameSite(2),
 		Expires:  time.Now().AddDate(0, 0, 1),
 	})
 
