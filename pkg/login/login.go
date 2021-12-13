@@ -73,11 +73,6 @@ func ByEmail(request *mytype.LoginRequest) (*mytype.UserDetail, error) {
 }
 
 func ByPhone(request *mytype.LoginRequest) (*mytype.UserDetail, error) {
-	err := mygrpc.VerifyCode(request.Phone, request.VerifyCode)
-	if err != nil {
-		return nil, err
-	}
-
 	resp, err := exist.User(request.Phone, request.Password, request.AppID, "", "", false)
 	if err != nil {
 		return nil, err
