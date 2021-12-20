@@ -44,7 +44,6 @@ var runCmd = &cli.Command{
 func msgSender() {
 	id := 0
 	for {
-		logger.Sugar().Infof("send example")
 		err := msgsrv.PublishExample(&msg.Example{
 			ID:      id,
 			Example: "hello world",
