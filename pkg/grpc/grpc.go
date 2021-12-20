@@ -22,6 +22,8 @@ func VerifyCode(param, code string) error {
 		return err
 	}
 
+	defer conn.Close()
+
 	client := pbverification.NewVerificationDoorClient(conn)
 	_, err = client.VerifyCode(context.Background(), &pbverification.VerifyCodeRequest{
 		Param: param,
@@ -38,6 +40,8 @@ func VerifyGoogleRecaptcha(response string) error {
 	if err != nil {
 		return err
 	}
+
+	defer conn.Close()
 
 	client := pbverification.NewVerificationDoorClient(conn)
 	resp, err := client.VerifyGoogleRecaptcha(context.Background(), &pbverification.VerifyGoogleRecaptchaRequest{
@@ -60,8 +64,9 @@ func CreateTestUser(appID string) (*pbuser.SignupResponse, error) {
 		return nil, err
 	}
 
-	client := pbuser.NewUserClient(conn)
+	defer conn.Close()
 
+	client := pbuser.NewUserClient(conn)
 	resp, err := client.SignUp(context.Background(), &pbuser.SignupRequest{
 		AppID:    appID,
 		Username: uuid.New().String(),
@@ -79,8 +84,9 @@ func CreateUser(appID, providerID string, providerUserInfo *idp.UserInfo) (*pbus
 		return nil, err
 	}
 
-	client := pbuser.NewUserClient(conn)
+	defer conn.Close()
 
+	client := pbuser.NewUserClient(conn)
 	resp, err := client.AddUser(context.Background(), &pbuser.AddUserRequest{
 		AppID: appID,
 		UserInfo: &pbuser.UserBasicInfo{
@@ -118,6 +124,8 @@ func QueryUserExist(username, password string) (*pbuser.UserBasicInfo, error) {
 		return nil, err
 	}
 
+	defer conn.Close()
+
 	client := pbuser.NewUserClient(conn)
 	resp, err := client.QueryUserExist(context.Background(), &pbuser.QueryUserExistRequest{
 		Username: username,
@@ -135,6 +143,8 @@ func QueryUserByUserProviderID(providerID, userProviderID string) (*pbuser.UserB
 		return nil, err
 	}
 
+	defer conn.Close()
+
 	client := pbuser.NewUserClient(conn)
 	resp, err := client.QueryUserByUserProviderID(context.Background(), &pbuser.QueryUserByUserProviderIDRequest{
 		ProviderID:     providerID,
@@ -151,6 +161,8 @@ func QueryUserFrozen(userID string) error {
 	if err != nil {
 		return err
 	}
+
+	defer conn.Close()
 
 	client := pbuser.NewUserClient(conn)
 	resp, err := client.QueryUserFrozen(context.Background(), &pbuser.QueryUserFrozenRequest{
@@ -171,6 +183,8 @@ func CreaeteApp() (*pbapplication.CreateApplicationResponse, error) {
 		return nil, err
 	}
 
+	defer conn.Close()
+
 	client := pbapplication.NewApplicationManagementClient(conn)
 	resp, err := client.CreateApplication(context.Background(), &pbapplication.CreateApplicationRequest{
 		Info: &pbapplication.ApplicationInfo{
@@ -190,6 +204,8 @@ func GetApplication(appID string) (*pbapplication.GetApplicationResponse, error)
 		return nil, err
 	}
 
+	defer conn.Close()
+
 	client := pbapplication.NewApplicationManagementClient(conn)
 	resp, err := client.GetApplication(context.Background(), &pbapplication.GetApplicationRequest{
 		AppID: appID,
@@ -205,6 +221,8 @@ func QueryUserInApplication(userID, appID string) error {
 	if err != nil {
 		return err
 	}
+
+	defer conn.Close()
 
 	client := pbapplication.NewApplicationManagementClient(conn)
 	_, err = client.GetUserFromApplication(context.Background(), &pbapplication.GetUserFromApplicationRequest{
@@ -222,6 +240,8 @@ func GetUserDetail(userID, appID string) (*pbapplication.GetApplicationUserDetai
 	if err != nil {
 		return nil, err
 	}
+
+	defer conn.Close()
 
 	client := pbapplication.NewApplicationManagementClient(conn)
 	resp, err := client.GetApplicationUserDetail(context.Background(), &pbapplication.GetApplicationUserDetailRequest{
