@@ -24,7 +24,12 @@ func dbRowToProviderInfo(row *ent.Provider) mytype.ProviderInfo {
 }
 
 func Create(ctx context.Context, in *mytype.AddProviderRequest) (*mytype.AddProviderResponse, error) {
-	info, err := db.Client().
+	cli, err := db.Client()
+	if err != nil {
+		return nil, xerrors.Errorf("fail get db client: %v", err)
+	}
+
+	info, err := cli.
 		Provider.
 		Create().
 		SetClientID(in.ClientID).
@@ -43,7 +48,12 @@ func Create(ctx context.Context, in *mytype.AddProviderRequest) (*mytype.AddProv
 }
 
 func Update(ctx context.Context, in *mytype.UpdateProviderRequest) (*mytype.UpdateProviderResponse, error) {
-	_, err := db.Client().
+	cli, err := db.Client()
+	if err != nil {
+		return nil, xerrors.Errorf("fail get db client: %v", err)
+	}
+
+	_, err = cli.
 		Provider.
 		Query().
 		Where(
@@ -56,7 +66,7 @@ func Update(ctx context.Context, in *mytype.UpdateProviderRequest) (*mytype.Upda
 		return nil, xerrors.Errorf("fail to query provider info: %v", err)
 	}
 
-	info, err := db.Client().
+	info, err := cli.
 		Provider.
 		UpdateOneID(in.Info.ProviderID).
 		SetClientID(in.Info.ClientID).
@@ -80,7 +90,12 @@ func Get(ctx context.Context, providerID string) (mytype.ProviderInfo, error) {
 		return mytype.ProviderInfo{}, xerrors.Errorf("invalid provider id: %v", err)
 	}
 
-	info, err := db.Client().
+	cli, err := db.Client()
+	if err != nil {
+		return mytype.ProviderInfo{}, xerrors.Errorf("fail get db client: %v", err)
+	}
+
+	info, err := cli.
 		Provider.
 		Query().
 		Where(
@@ -96,7 +111,12 @@ func Get(ctx context.Context, providerID string) (mytype.ProviderInfo, error) {
 }
 
 func GetAll(ctx context.Context, in *mytype.GetAllProvidersRequest) (*mytype.GetAllProvidersResponse, error) {
-	infos, err := db.Client().
+	cli, err := db.Client()
+	if err != nil {
+		return nil, xerrors.Errorf("fail get db client: %v", err)
+	}
+
+	infos, err := cli.
 		Provider.
 		Query().
 		Where(
@@ -118,7 +138,12 @@ func GetAll(ctx context.Context, in *mytype.GetAllProvidersRequest) (*mytype.Get
 }
 
 func Delete(ctx context.Context, in *mytype.DeleteProviderRequest) (*mytype.DeleteProviderResponse, error) {
-	_, err := db.Client().
+	cli, err := db.Client()
+	if err != nil {
+		return nil, xerrors.Errorf("fail get db client: %v", err)
+	}
+
+	_, err = cli.
 		Provider.
 		UpdateOneID(in.ProviderID).
 		SetDeleteAt(uint32(time.Now().Unix())).

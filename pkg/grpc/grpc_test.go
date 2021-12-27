@@ -1,6 +1,7 @@
 package grpc
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"strconv"
@@ -25,13 +26,13 @@ func TestGrpc(t *testing.T) {
 		return
 	}
 
-	err := VerifyCode("crazyzplzpl@163.com", "12345")
+	err := VerifyCode(context.Background(), "crazyzplzpl@163.com", "12345")
 	assert.NotNil(t, err)
 
 	username := "test" + uuid.New().String()
-	_, err = QueryUserExist(username, "")
+	_, err = QueryUserExist(context.Background(), username, "")
 	assert.NotNil(t, err)
 
-	_, err = QueryUserByUserProviderID("", "")
+	_, err = QueryUserByUserProviderID(context.Background(), "", "")
 	assert.NotNil(t, err)
 }
