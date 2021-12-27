@@ -23,6 +23,9 @@ import (
 // 			default: loginResponse
 func Login(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
+	myCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
 	request := mytype.LoginRequest{}
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
@@ -35,7 +38,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := login.Login(r, &request, ctx)
+	resp, err := login.Login(r, &request, myCtx)
 	if err != nil {
 		response.RespondWithError(w, http.StatusBadRequest, err.Error())
 		return
@@ -128,6 +131,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 //			default: getSSOLoginResponse
 func GetSSOLogin(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
+	myCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
 	request := mytype.GetSSOLoginRequest{}
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
@@ -135,7 +141,7 @@ func GetSSOLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := login.GetSSOLogin(ctx, request)
+	resp, err := login.GetSSOLogin(myCtx, request)
 	if err != nil {
 		response.RespondWithError(w, http.StatusBadRequest, err.Error())
 		return
