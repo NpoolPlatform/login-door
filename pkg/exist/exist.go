@@ -2,6 +2,7 @@ package exist
 
 import (
 	"context"
+	"time"
 
 	mygrpc "github.com/NpoolPlatform/login-door/pkg/grpc"
 	"github.com/NpoolPlatform/login-door/pkg/mytype"
@@ -10,6 +11,9 @@ import (
 )
 
 func User(ctx context.Context, username, password, appID, providerID, providerUserID string, thirdParty bool) (*mytype.UserDetail, error) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
 	userBasicInfo := &pbuser.UserBasicInfo{} // nolint
 	if !thirdParty {
 		resp, err := mygrpc.QueryUserExist(ctx, username, password)

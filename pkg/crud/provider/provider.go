@@ -24,6 +24,9 @@ func dbRowToProviderInfo(row *ent.Provider) mytype.ProviderInfo {
 }
 
 func Create(ctx context.Context, in *mytype.AddProviderRequest) (*mytype.AddProviderResponse, error) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
 	cli, err := db.Client()
 	if err != nil {
 		return nil, xerrors.Errorf("fail get db client: %v", err)
@@ -48,6 +51,9 @@ func Create(ctx context.Context, in *mytype.AddProviderRequest) (*mytype.AddProv
 }
 
 func Update(ctx context.Context, in *mytype.UpdateProviderRequest) (*mytype.UpdateProviderResponse, error) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
 	cli, err := db.Client()
 	if err != nil {
 		return nil, xerrors.Errorf("fail get db client: %v", err)
@@ -85,6 +91,9 @@ func Update(ctx context.Context, in *mytype.UpdateProviderRequest) (*mytype.Upda
 }
 
 func Get(ctx context.Context, providerID string) (mytype.ProviderInfo, error) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
 	id, err := uuid.Parse(providerID)
 	if err != nil {
 		return mytype.ProviderInfo{}, xerrors.Errorf("invalid provider id: %v", err)
@@ -111,6 +120,9 @@ func Get(ctx context.Context, providerID string) (mytype.ProviderInfo, error) {
 }
 
 func GetAll(ctx context.Context, in *mytype.GetAllProvidersRequest) (*mytype.GetAllProvidersResponse, error) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
 	cli, err := db.Client()
 	if err != nil {
 		return nil, xerrors.Errorf("fail get db client: %v", err)
@@ -138,6 +150,9 @@ func GetAll(ctx context.Context, in *mytype.GetAllProvidersRequest) (*mytype.Get
 }
 
 func Delete(ctx context.Context, in *mytype.DeleteProviderRequest) (*mytype.DeleteProviderResponse, error) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
 	cli, err := db.Client()
 	if err != nil {
 		return nil, xerrors.Errorf("fail get db client: %v", err)
