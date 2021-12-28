@@ -2,6 +2,7 @@ package loginrecord
 
 import (
 	"context"
+	"time"
 
 	"github.com/NpoolPlatform/login-door/pkg/db"
 	"github.com/NpoolPlatform/login-door/pkg/db/ent"
@@ -26,6 +27,9 @@ func dbRowToInfo(row *ent.LoginRecord) *mytype.LoginRecord {
 }
 
 func Create(ctx context.Context, in *mytype.LoginRecord) (*mytype.LoginRecord, error) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
 	userID, err := uuid.Parse(in.UserID)
 	if err != nil {
 		return nil, xerrors.Errorf("invalid user id: %v", err)
@@ -36,7 +40,12 @@ func Create(ctx context.Context, in *mytype.LoginRecord) (*mytype.LoginRecord, e
 		return nil, xerrors.Errorf("invalid app id: %v", err)
 	}
 
-	info, err := db.Client().
+	cli, err := db.Client()
+	if err != nil {
+		return nil, xerrors.Errorf("fail get db client: %v", err)
+	}
+
+	info, err := cli.
 		LoginRecord.
 		Create().
 		SetAppID(appID).
@@ -56,6 +65,9 @@ func Create(ctx context.Context, in *mytype.LoginRecord) (*mytype.LoginRecord, e
 }
 
 func GetByUser(ctx context.Context, in *mytype.GetUserLoginRecordsRequest) (*mytype.GetUserLoginRecordsResponse, error) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
 	user, err := uuid.Parse(in.UserID)
 	if err != nil {
 		return nil, xerrors.Errorf("invalid user id: %v", err)
@@ -66,7 +78,12 @@ func GetByUser(ctx context.Context, in *mytype.GetUserLoginRecordsRequest) (*myt
 		return nil, xerrors.Errorf("invalid app id: %v", err)
 	}
 
-	infos, err := db.Client().
+	cli, err := db.Client()
+	if err != nil {
+		return nil, xerrors.Errorf("fail get db client: %v", err)
+	}
+
+	infos, err := cli.
 		LoginRecord.
 		Query().
 		Where(
@@ -90,12 +107,20 @@ func GetByUser(ctx context.Context, in *mytype.GetUserLoginRecordsRequest) (*myt
 }
 
 func GetByApp(ctx context.Context, in *mytype.GetAppLoginRecordsRequest) (*mytype.GetAppLoginRecordsResponse, error) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
 	appID, err := uuid.Parse(in.AppID)
 	if err != nil {
 		return nil, xerrors.Errorf("invalid app id: %v", err)
 	}
 
-	infos, err := db.Client().
+	cli, err := db.Client()
+	if err != nil {
+		return nil, xerrors.Errorf("fail get db client: %v", err)
+	}
+
+	infos, err := cli.
 		LoginRecord.
 		Query().
 		Where(
@@ -118,7 +143,15 @@ func GetByApp(ctx context.Context, in *mytype.GetAppLoginRecordsRequest) (*mytyp
 }
 
 func GetAll(ctx context.Context, in *mytype.GetLoginRecordsRequest) (*mytype.GetLoginRecordsResponse, error) {
-	infos, err := db.Client().
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	cli, err := db.Client()
+	if err != nil {
+		return nil, xerrors.Errorf("fail get db client: %v", err)
+	}
+
+	infos, err := cli.
 		LoginRecord.
 		Query().All(ctx)
 	if err != nil {

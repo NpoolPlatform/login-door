@@ -14,8 +14,8 @@ import (
 	"golang.org/x/xerrors"
 )
 
-func Login(r *http.Request, request *mytype.LoginRequest) (*mytype.UserDetail, error) { // nolint
-	resp, err := mygrpc.GetApplication(request.AppID)
+func Login(r *http.Request, request *mytype.LoginRequest, ctx context.Context) (*mytype.UserDetail, error) { // nolint
+	resp, err := mygrpc.GetApplication(ctx, request.AppID)
 	if err != nil {
 		return nil, xerrors.Errorf("fail to get application info: %v", err)
 	}
@@ -25,7 +25,7 @@ func Login(r *http.Request, request *mytype.LoginRequest) (*mytype.UserDetail, e
 			return nil, xerrors.Errorf("didn't pass google recaptcha")
 		}
 
-		err := mygrpc.VerifyGoogleRecaptcha(request.GoogleRecaptchaResponse)
+		err := mygrpc.VerifyGoogleRecaptcha(ctx, request.GoogleRecaptchaResponse)
 		if err != nil {
 			return nil, err
 		}
@@ -35,28 +35,28 @@ func Login(r *http.Request, request *mytype.LoginRequest) (*mytype.UserDetail, e
 		if request.Email != "" && request.Phone != "" {
 			return nil, xerrors.Errorf("cannot login with all username, email and phone")
 		}
-		return ByUsername(request)
+		return ByUsername(ctx, request)
 	}
 	if request.Email != "" {
 		if request.Username != "" && request.Phone != "" {
 			return nil, xerrors.Errorf("cannot login with all username, email and phone")
 		}
-		return ByEmail(request)
+		return ByEmail(ctx, request)
 	}
 	if request.Phone != "" {
 		if request.Email != "" && request.Username != "" {
 			return nil, xerrors.Errorf("cannot login with all username, email and phone")
 		}
-		return ByPhone(request)
+		return ByPhone(ctx, request)
 	}
 	if request.Provider != "" {
-		return ByThirdParty(request)
+		return ByThirdParty(ctx, request)
 	}
 	return nil, xerrors.Errorf("fail to login")
 }
 
-func ByUsername(request *mytype.LoginRequest) (*mytype.UserDetail, error) {
-	resp, err := exist.User(request.Username, request.Password, request.AppID, "", "", false)
+func ByUsername(ctx context.Context, request *mytype.LoginRequest) (*mytype.UserDetail, error) {
+	resp, err := exist.User(ctx, request.Username, request.Password, request.AppID, "", "", false)
 	if err != nil {
 		return nil, err
 	}
@@ -64,23 +64,23 @@ func ByUsername(request *mytype.LoginRequest) (*mytype.UserDetail, error) {
 	return resp, nil
 }
 
-func ByEmail(request *mytype.LoginRequest) (*mytype.UserDetail, error) {
-	resp, err := exist.User(request.Email, request.Password, request.AppID, "", "", false)
+func ByEmail(ctx context.Context, request *mytype.LoginRequest) (*mytype.UserDetail, error) {
+	resp, err := exist.User(ctx, request.Email, request.Password, request.AppID, "", "", false)
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
 }
 
-func ByPhone(request *mytype.LoginRequest) (*mytype.UserDetail, error) {
-	resp, err := exist.User(request.Phone, request.Password, request.AppID, "", "", false)
+func ByPhone(ctx context.Context, request *mytype.LoginRequest) (*mytype.UserDetail, error) {
+	resp, err := exist.User(ctx, request.Phone, request.Password, request.AppID, "", "", false)
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
 }
 
-func ByThirdParty(request *mytype.LoginRequest) (*mytype.UserDetail, error) {
+func ByThirdParty(ctx context.Context, request *mytype.LoginRequest) (*mytype.UserDetail, error) {
 	if request.Code == "" || request.State == "" {
 		return nil, xerrors.Errorf("you need to auth in third party provider first")
 	}
@@ -109,7 +109,7 @@ func ByThirdParty(request *mytype.LoginRequest) (*mytype.UserDetail, error) {
 		return nil, xerrors.Errorf("fail to login into third party provider: %v", err)
 	}
 
-	resp, err := exist.User("", "", request.AppID, request.Provider, providerUserInfo.Id, true)
+	resp, err := exist.User(ctx, "", "", request.AppID, request.Provider, providerUserInfo.Id, true)
 	// provider user exist in our system.
 	if err == nil && resp != nil {
 		return resp, nil
@@ -161,7 +161,7 @@ func Logout(request mytype.LogoutRequest) error {
 	return nil
 }
 
-func GetSSOLogin(request mytype.GetSSOLoginRequest) (mytype.GetSSOLoginResponse, error) {
+func GetSSOLogin(ctx context.Context, request mytype.GetSSOLoginRequest) (mytype.GetSSOLoginResponse, error) {
 	resp, err := myredis.QueryKeyInfo(mytype.LoginKeyword, request.UserID[:8]+request.Session)
 	if err != nil {
 		return mytype.GetSSOLoginResponse{}, err
@@ -171,7 +171,7 @@ func GetSSOLogin(request mytype.GetSSOLoginRequest) (mytype.GetSSOLoginResponse,
 		return mytype.GetSSOLoginResponse{}, xerrors.Errorf("invalid user")
 	}
 
-	err = mygrpc.QueryUserInApplication(request.UserID, request.AppID)
+	err = mygrpc.QueryUserInApplication(ctx, request.UserID, request.AppID)
 	if err != nil {
 		return mytype.GetSSOLoginResponse{}, xerrors.Errorf("user can not login into app: %v", err)
 	}
