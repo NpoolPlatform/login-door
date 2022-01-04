@@ -7,8 +7,6 @@ import (
 	"time"
 
 	"github.com/NpoolPlatform/login-door/pkg/cookie"
-	loginrecord "github.com/NpoolPlatform/login-door/pkg/crud/login-record"
-	"github.com/NpoolPlatform/login-door/pkg/location"
 	"github.com/NpoolPlatform/login-door/pkg/login"
 	"github.com/NpoolPlatform/login-door/pkg/mytype"
 	myredis "github.com/NpoolPlatform/login-door/pkg/redis"
@@ -54,34 +52,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		response.RespondWithError(w, http.StatusBadRequest, err.Error())
 		return
-	}
-
-	respLocation, err := location.GetLocationByIP(r.RemoteAddr)
-	if err != nil {
-		_, err := loginrecord.Create(context.Background(), &mytype.LoginRecord{
-			UserID:    resp.UserBasicInfo.UserID,
-			AppID:     request.AppID,
-			IP:        r.RemoteAddr,
-			LoginTime: uint32(time.Now().Unix()),
-		})
-		if err != nil {
-			response.RespondWithError(w, http.StatusBadRequest, err.Error())
-			return
-		}
-	} else {
-		_, err := loginrecord.Create(context.Background(), &mytype.LoginRecord{
-			UserID:    resp.UserBasicInfo.UserID,
-			AppID:     request.AppID,
-			IP:        r.RemoteAddr,
-			Lat:       float64(respLocation.Lat),
-			Lon:       float64(respLocation.Lon),
-			LoginTime: uint32(time.Now().Unix()),
-			Location:  respLocation.Country + "," + respLocation.City,
-		})
-		if err != nil {
-			response.RespondWithError(w, http.StatusBadRequest, err.Error())
-			return
-		}
 	}
 
 	infoLogin := mytype.LoginSession{

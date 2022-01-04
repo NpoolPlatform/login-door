@@ -34,6 +34,7 @@ func SetAllCookie(r *http.Request, loginSession, appLoginSession, userID string,
 			SameSite: http.SameSite(2),
 			Domain:   cookieDomain,
 			Expires:  time.Now().AddDate(0, 0, 1),
+			HttpOnly: true,
 		})
 	} else {
 		http.SetCookie(w, &http.Cookie{
@@ -42,6 +43,7 @@ func SetAllCookie(r *http.Request, loginSession, appLoginSession, userID string,
 			Path:     "/",
 			SameSite: http.SameSite(2),
 			Expires:  time.Now().AddDate(0, 0, 1),
+			HttpOnly: true,
 		})
 	}
 
@@ -51,6 +53,7 @@ func SetAllCookie(r *http.Request, loginSession, appLoginSession, userID string,
 		Path:     "/",
 		SameSite: http.SameSite(2),
 		Expires:  time.Now().AddDate(0, 0, 1),
+		HttpOnly: true,
 	})
 
 	http.SetCookie(w, &http.Cookie{
@@ -59,6 +62,7 @@ func SetAllCookie(r *http.Request, loginSession, appLoginSession, userID string,
 		Path:     "/",
 		SameSite: http.SameSite(2),
 		Expires:  time.Now().AddDate(0, 0, 1),
+		HttpOnly: true,
 	})
 
 	return nil

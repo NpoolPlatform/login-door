@@ -253,3 +253,14 @@ type GetLoginRecordsRequest struct {
 type GetLoginRecordsResponse struct {
 	Infos []*LoginRecord
 }
+
+// swagger:parameters createUserLoginRecord
+type CreateUserLoginRecordRequest struct {
+	AppID  string
+	UserID string
+}
+
+// swagger:response createUserLoginRecordResponse
+type CreateUserLoginRecordResponse struct {
+	Info string
+}
