@@ -57,6 +57,10 @@ spec:
             backend:
               serviceName: login-door
               servicePort: 50060
+          - path: /api/login-door/v1/create/user/login/record
+            backend:
+              serviceName: login-door
+              servicePort: 50060
     - host: api.xpool.top
       http: *http_appid_userid_rules
     - host: www.npool.top
