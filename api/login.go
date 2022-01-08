@@ -33,7 +33,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if request.Phone == "" && request.Password == "" {
+	if request.Password == "" {
 		response.RespondWithError(w, http.StatusBadRequest, "password is must, can not be null")
 		return
 	}
