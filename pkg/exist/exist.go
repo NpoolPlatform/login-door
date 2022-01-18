@@ -6,7 +6,7 @@ import (
 
 	mygrpc "github.com/NpoolPlatform/login-door/pkg/grpc"
 	"github.com/NpoolPlatform/login-door/pkg/mytype"
-	pbuser "github.com/NpoolPlatform/user-management/message/npool"
+	pbuser "github.com/NpoolPlatform/message/npool/user"
 	"golang.org/x/xerrors"
 )
 

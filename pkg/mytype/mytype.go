@@ -3,8 +3,8 @@ package mytype
 import (
 	"time"
 
-	pbapp "github.com/NpoolPlatform/application-management/message/npool"
-	pbuser "github.com/NpoolPlatform/user-management/message/npool"
+	pbapp "github.com/NpoolPlatform/message/npool/application"
+	pbuser "github.com/NpoolPlatform/message/npool/user"
 	"github.com/google/uuid"
 )
 
